@@ -1,0 +1,106 @@
+{
+  "schema": "https://josfox.ai/jos.schema.v0.1",
+  "id": "josfox.ecom.photo.apparel",
+  "name": "E-commerce Apparel Photo",
+  "version": "0.1.0-dev",
+  "meta": {
+    "license": "CC BY 4.0",
+    "owner": "JOSFOX",
+    "languages": [
+      "es",
+      "en"
+    ],
+    "status": "experimental"
+  },
+  "prompt": {
+    "language": "en",
+    "max_user_chars": 800,
+    "template": "E-commerce photo. Pure white background. Garment color: {{garment_color}}. Shot style: {{camera_plane}}. Channel rules: {{channel_rules}}. Angle: {{angle}}.",
+    "variables": {
+      "garment_color": {
+        "type": "string",
+        "required": true
+      },
+      "camera_plane": {
+        "type": "enum",
+        "values": [
+          "studio",
+          "flatlay",
+          "lifestyle"
+        ],
+        "default": "studio"
+      },
+      "angle": {
+        "type": "enum",
+        "values": [
+          "front",
+          "3/4",
+          "side",
+          "top"
+        ],
+        "default": "front"
+      },
+      "channel": {
+        "type": "enum",
+        "values": [
+          "amazon",
+          "mercado_libre",
+          "shopify"
+        ],
+        "default": "amazon"
+      }
+    },
+    "constraints": {
+      "forbidden_words": [
+        "gore",
+        "nude"
+      ],
+      "max_tokens_hint": 2048
+    },
+    "computed": {
+      "channel_rules": {
+        "amazon": "Pure white #FFFFFF background; no props; no borders; single product, centered.",
+        "mercado_libre": "Clean neutral background; minimal shadows; product centered; readable details.",
+        "shopify": "Brand catalog look; consistent lighting; good crop for theme image cards."
+      }
+    }
+  },
+  "connection": {
+    "provider": "google.genai",
+    "model": "gemini-2.5-flash-image-preview",
+    "auth": {
+      "mode": "apiKey",
+      "in": "session"
+    },
+    "timeouts": {
+      "request_ms": 45000
+    }
+  },
+  "endpoint": {
+    "generate_image": {
+      "method": "POST",
+      "path": "/api/generate/apparel"
+    }
+  },
+  "routing": {
+    "targets": [
+      {
+        "provider": "google.genai",
+        "model": "gemini-2.5-flash-image-preview"
+      }
+    ],
+    "fallbacks": [
+      {
+        "type": "no_stream_generate_once"
+      }
+    ]
+  },
+  "dist": {
+    "cacheable": true,
+    "signature": {
+      "alg": "Ed25519",
+      "kid": "placeholder",
+      "jws": "detached"
+    }
+  }
+}
