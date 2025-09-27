@@ -1,0 +1,64 @@
+{
+  "$id": "https://josfox.ai/spec/jos.v0.3.1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "version",
+    "kind"
+  ],
+  "properties": {
+    "schema": {
+      "const": "jos.v0.3.1"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "task",
+        "pipeline",
+        "bundle"
+      ]
+    },
+    "$extends": {
+      "type": "string"
+    },
+    "$imports": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "secrets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "envMap": {
+      "type": "object"
+    },
+    "tasks": {
+      "type": "array"
+    },
+    "devServer": {
+      "type": "object"
+    },
+    "evaluation": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "jos.v0.3.1",
+  "id": "tools/envCheck",
+  "name": "Env Check (masked)",
+  "version": "0.3.1",
+  "kind": "task",
+  "inputs": {
+    "vars": [
+      "NODE_ENV",
+      "PORT"
+    ],
+    "mask": [
+      "API_KEY",
+      "TOKEN"
+    ]
+  },
+  "envMap": {
+    "VARS": "inputs.vars",
+    "MASK": "inputs.mask"
+  },
+  "tasks": [
+    {
+      "id": "echo",
+      "runner": "shell",
+      "script": {
+        "shell": "bash",
+        "body": "missing=0; echo '\ud83d\udd0e Checking\u2026'; for v in $VARS; do val=$(printenv \"$v\"); if [ -z \"$val\" ]; then echo \"\u274c $v\"; missing=1; else if echo \"$MASK\" | tr ' ' '\\n' | grep -qx \"$v\"; then masked=$(printf '%s' \"$val\" | sed -E 's/.(?=.{4})/*/g'); echo \"\u2705 $v=$masked\"; else echo \"\u2705 $v=$val\"; fi; fi; done; [ $missing -eq 0 ] || exit 2"
+      }
+    }
+  ],
+  "evaluation": {
+    "contract": "stars_1_5",
+    "feedbackEndpoint": "https://example.com/eval",
+    "authToken": "REPLACE_ME",
+    "context": {
+      "task": "env-check"
+    }
+  }
+}

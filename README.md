@@ -1,43 +1,50 @@
-# .jos Format — v0.1-dev
+# @josfox/jos — v3.1 (Community Runtime)
 
-**EN (below) · ES (abajo)**
+**Spec-aligned**: tied to **JOSFOX `.jos` v0.3.1** (Experimental, Community Edition).  
+Implements: **validate · run · serve · pack · publish · doc · test · lint** (community scope).
 
----
+> **License**: MIT (code). The **spec** is **CC BY 4.0** — *attribution required*.  
+> **No Warranty**: This software is provided **AS IS**. Users must implement their own safeguards.
 
-## 📘 English
+**Repo (spec):** https://github.com/josfox-ai/jos-format-spec
 
-The **`.jos` format** is a declarative JSON artifact for prompts, endpoints and connections.  
-Version **0.1-dev** is experimental — intended for iteration and community feedback.
+## Install
+```bash
+npm i -g @josfox/jos
+```
 
-### Goals
-- **Consistency**: e-commerce photography templates (white background, channel rules)
-- **Portability**: decouple prompts from providers
-- **Security**: limit user input with `max_user_chars`, forbidden words
-- **Caching/Signing**: stable, reproducible artifacts
+## Commands
+- `jos validate <file>` — validate against v0.3.1 schema and resolve `$extends/$imports`.
+- `jos run <file>` — execute a `task` or `pipeline` (shell/node; http/forge/ai are community stubs).
+- `jos serve <file>` — run the declared `devServer` for local testing.
+- `jos pack <file> --out dist.json` — package resolved artifact (JSON).
+- `jos publish <file>` — placeholder for JOSFOX.cloud Forge.
+- `jos doc <file> --out README.md` — generate quick docs from `.jos`.
+- `jos test <file>` — run `checks[]` (basic assertions).
+- `jos lint <path>` — basic spec lint.
 
-### Quick start
-- Validate: `node tools/jos-validate.mjs examples/apparel.ecom.jos`
-- Integrate: client sends only **variables**; server resolves template → final prompt; call `/api/generate/apparel`.
+## Eval hooks (fight evaluation blindness)
+Declare in `.jos`:
+```json
+{
+  "evaluation": {
+    "contract": "stars_1_5",
+    "feedbackEndpoint": "https://example.com/eval",
+    "authToken": "REPLACE_ME",
+    "context": {"project": "landing"}
+  }
+}
+```
+Then call:
+```bash
+jos run file.jos --eval.stars 5 --eval.notes "LGTM" --eval.context '{"actor":"human"}'
+```
 
-### Files
-- `schemas/jos.schema.v0.1.json` — JSON Schema
-- `examples/apparel.ecom.jos` — canonical example
-- `tools/jos-validate.mjs` — Node validator (Ajv)
-- `licenses/` — CC BY 4.0 (spec), Apache 2.0 (implementations)
+## Email privacy
+- Use org-level maintainer (e.g., `oss@josfox.mx`) and hide personal email in npm profile.
+- Use GitHub noreply for commits (Settings → Emails → “Keep my email addresses private”).
 
----
-
-## 📘 Español
-
-El **formato `.jos`** es un artefacto JSON declarativo para prompts, endpoints y conexiones.  
-La versión **0.1-dev** es experimental — pensada para iterar con la comunidad.
-
-### Objetivos
-- **Consistencia**: plantillas de foto e‑commerce (fondo blanco, reglas por canal)
-- **Portabilidad**: desacoplar prompts de proveedores
-- **Seguridad**: limitar entrada del usuario con `max_user_chars`, palabras prohibidas
-- **Caché/Firma**: artefactos estables y reproducibles
-
-### Inicio rápido
-- Validar: `node tools/jos-validate.mjs examples/apparel.ecom.jos`
-- Integrar: el cliente envía solo **variables**; el servidor resuelve la plantilla → prompt final; invoca `/api/generate/apparel`.
+## License
+- Code: **MIT**  
+- Spec: **CC BY 4.0** (attribution required)  
+- See `LICENSE`, `NOTICE`, and `THIRD_PARTY_NOTICES.md`.

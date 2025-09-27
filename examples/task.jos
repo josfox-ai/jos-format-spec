@@ -1,0 +1,7 @@
+{
+  "version": "0.3.1",
+  "kind": "task",
+  "name": "🦊 What did de fox said?",
+  "x": { "jos": { "autoRun": true } },
+  "script": { "shell": "bash", "body": "echo listo\n" }
+}
