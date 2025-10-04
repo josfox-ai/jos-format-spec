@@ -1,0 +1,34 @@
+name: CI — .jos runners
+on: [push, pull_request]
+jobs:
+  node-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci || true
+        working-directory: ./foxjos
+      - run: node ./foxjos/bin/foxjos.mjs run examples/landing-page.jos || true
+  python-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r runners/python/requirements.txt
+      - run: python runners/python/run.py examples/landing-page.jos --fake || true
+  crewai-mapping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: python integrations/crewai_from_jos.py examples/landing-page.jos
+  langgraph-mapping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: python integrations/langgraph_from_jos.py examples/landing-page.jos

@@ -1,0 +1,104 @@
+# --- Sistema operativo ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# --- Entornos virtuales y dependencias ---
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+venv/
+env/
+.venv/
+ENV/
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+.eggs/
+.python-version
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.cache/
+.npm/
+.tmp/
+.eslintcache
+
+# --- Configuración del entorno ---
+.env
+.env.*
+.envrc
+*.local
+*.secret
+*.bak
+*.swp
+*.swo
+*.tmp
+
+# --- VSCode / JetBrains / otros editores ---
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+
+# --- Archivos temporales del sistema / backups ---
+*.log
+*.lock
+*.pid
+*.seed
+*.pid.lock
+*.tgz
+*.tar.gz
+*.zip
+*.bak
+*.old
+*.orig
+
+# --- Git ---
+.gitignore~
+.gitmodules~
+*.patch
+*.diff
+
+# --- Tests y outputs ---
+out/
+coverage/
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+junit.xml
+test-results.xml
+reports/
+*.prof
+*.coverage
+*.log
+
+# --- Jupyter / IPython ---
+.ipynb_checkpoints/
+*.ipynb~
+.history
+
+# --- Distribución / publicación ---
+dist/
+build/
+*.manifest
+*.spec
+.DS_Store
+
+# --- Editor temporales ---
+*.kate-swp
+*~
+*.swp
+*.swo

@@ -1,0 +1,20 @@
+version: "0.9"
+id: "rag-query-v1"
+meta: { title: "RAG con citas" }
+compat:
+  models: ["auto-best","ollama:llama3"]
+  tools: ["mcp.vectordb.search"]
+policy:
+  guards: { retrieval_required: true, max_steps: 8, max_runtime_s: 60 }
+pipeline:
+  - role: system
+    prompt: "Debes citar fuentes. Si no hay, responde 'insuficiente evidencia'."
+  - role: tool
+    tool_call: "mcp.vectordb.search"
+    inputs: ["user_query"]
+    outputs: ["passages"]
+  - role: generator
+    prompt: "Responde usando solo {{passages}} e incluye citas."
+    outputs: ["answer"]
+artifacts:
+  save: [{ name: "answer.md", from: "answer" }]

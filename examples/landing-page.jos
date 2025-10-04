@@ -1,0 +1,34 @@
+version: "0.9"
+id: "landing-gen-v1"
+meta: { title: "Landing Generator", owner: "JOSFOX", license: "CC BY 4.0" }
+compat:
+  models: ["auto-best","ollama:llama3:8b","gpt-4.1","azure:gpt-4o","aws:bedrock:anthropic.claude-3-7","oracle:cohere.command-r"]
+  tools: ["n8n.create_lead"]
+inputs:
+  product_name: "JOSFOX Multi Pass"
+  features: ["QR access", "Flexible tiers", "AI guidance"]
+policy:
+  token_budget: { total_max: 80000, prompt_max: 6000, hard_fail: true }
+  guards: { max_steps: 10, max_runtime_s: 90, retry: {max: 1, backoff: "exp"} }
+pipeline:
+  - role: system
+    prompt: "Eres un copywriter de conversión. Evita claims no verificables."
+  - role: generator
+    model: "auto-best"
+    prompt: "Escribe un hero + 3 bullets para {{product_name}} usando {{features}}."
+    outputs: ["draft"]
+  - role: critic
+    prompt: "Enumera claims dudosos como issues[]."
+    inputs: ["draft"]
+    outputs: ["issues"]
+  - role: fixer
+    when: "{{issues.length > 0}}"
+    prompt: "Reescribe el draft resolviendo cada issue."
+    inputs: ["draft","issues"]
+    outputs: ["final_copy"]
+  - role: gate
+    human_review: true
+    instructions: "Aprueba o pide cambios."
+artifacts:
+  save: [{ name: "landing.md", from: "final_copy" }]
+audit: { capture: ["tokens","latency_ms","model_name","tool_calls"] }

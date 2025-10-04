@@ -1,0 +1,21 @@
+{
+  "name": "foxjos",
+  "version": "0.9.0-rc.1",
+  "description": ".jos runner CLI (Node) \u2014 portable prompt+pipelines",
+  "type": "module",
+  "bin": {
+    "foxjos": "./bin/foxjos.mjs"
+  },
+  "exports": {
+    ".": "./src/run.mjs"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.5.1"
+  },
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,27 @@
+version: "0.9"
+id: "image-hero-v1"
+meta: { title: "Hero Image + Alt" }
+compat:
+  models: ["gpt-4.1","imagegen:auto"]
+  tools: ["imagegen.create"]
+policy:
+  token_budget: { total_max: 40000 }
+  guards: { max_steps: 6, max_runtime_s: 75 }
+pipeline:
+  - role: generator
+    model: "gpt-4.1"
+    prompt: "Crea un brief conciso para una imagen hero de un producto fitness."
+    outputs: ["brief"]
+  - role: tool
+    tool_call: "imagegen.create"
+    inputs: ["brief"]
+    outputs: ["hero_image_path"]
+  - role: generator
+    prompt: "Escribe alt text y caption para la hero image."
+    inputs: ["brief"]
+    outputs: ["alt_text","caption"]
+artifacts:
+  save:
+    - { name: "hero.png", from: "hero_image_path" }
+    - { name: "hero.alt.txt", from: "alt_text" }
+    - { name: "hero.caption.txt", from: "caption" }
