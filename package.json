@@ -1,0 +1,13 @@
+{
+  "name": "@josfox/jos",
+  "version": "0.0.1",
+  "description": "JOS CLI (clean reboot)",
+  "license": "MIT",
+  "bin": {
+    "jos": "bin/jos"
+  },
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  }
+}
