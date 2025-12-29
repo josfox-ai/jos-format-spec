@@ -5,6 +5,12 @@ All notable changes to the `.jos` specification and packages.
 ## [Unreleased]
 
 ### Added
+- **`jos prompts` command** — Prompt optimization via open API
+  - `optimize` — Improve prompts in existing .jos artifacts
+  - `validate` — Check prompt quality against standards
+  - `generate` — Create new .jos from natural language intention
+  - `provider` — Manage API providers
+- **PROMPTS_API.md** — Open standard specification for prompt optimization services
 - LLM.md for AI agent-friendly specification reference
 - JOSFOX Internet captive portal support in jos-cli
 - Raspberry Pi terminal compatibility (ASCII/16-color fallback)
