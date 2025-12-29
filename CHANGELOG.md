@@ -11,6 +11,7 @@ All notable changes to the `.jos` specification and packages.
   - `generate` — Create new .jos from natural language intention
   - `provider` — Manage API providers
 - **PROMPTS_API.md** — Open standard specification for prompt optimization services
+- **LLMs.md** — LLM implementation guide with A2A and MCP integration examples
 - LLM.md for AI agent-friendly specification reference
 - JOSFOX Internet captive portal support in jos-cli
 - Raspberry Pi terminal compatibility (ASCII/16-color fallback)
