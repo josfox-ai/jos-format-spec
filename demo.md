@@ -10,16 +10,16 @@
 | Package | Version | npm Status |
 |---------|---------|------------|
 | `@josfox/jos` | **4.0.8** | ✅ LIVE |
-| `@josfox/jos-cli` | **1.0.7** | ✅ LIVE |
+| `@josfox/jos-cli` | **1.0.8** | ✅ LIVE |
 | `josfox` | **1.0.6** | ✅ LIVE |
 | `josctl` | **0.0.4** | ✅ LIVE |
 
 **Verification:**
 ```
 $ npm view @josfox/jos version → 4.0.8
-$ npm view @josfox/jos-cli version → 1.0.7  
+$ npm view @josfox/jos-cli version → 1.0.8  
 $ npm view josfox version → 1.0.6
-$ npm view josctl version → 0.0.4
+$ npm view josctl version → 0.0.5
 ```
 
 ---
@@ -60,9 +60,9 @@ jos run publish-josctl.jos --flow main
 | Package | Local | npm | Match |
 |---------|-------|-----|-------|
 | @josfox/jos | 4.0.8 | 4.0.8 | ✅ |
-| @josfox/jos-cli | 1.0.7 | 1.0.7 | ✅ |
+| @josfox/jos-cli | 1.0.8 | 1.0.8 | ✅ |
 | josfox | 1.0.6 | 1.0.6 | ✅ |
-| josctl | 0.0.4 | 0.0.4 | ✅ |
+| josctl | 0.0.5 | 0.0.5 | ✅ |
 
 ### 2. Security Audit ✅
 

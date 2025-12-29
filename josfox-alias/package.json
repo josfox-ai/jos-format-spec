@@ -8,7 +8,7 @@
         "josfox": "bin/josfox"
     },
     "dependencies": {
-        "@josfox/jos": "^4.0.4"
+        "@josfox/jos": "^4.0.8"
     },
     "keywords": [
         "josfox",

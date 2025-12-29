@@ -25,7 +25,7 @@
 **Stoic Kernel for AI Agent Orchestration**
 
 [![npm](https://img.shields.io/badge/npm-@josfox/jos-00ffff?style=for-the-badge)](https://www.npmjs.com/package/@josfox/jos)
-[![Version](https://img.shields.io/badge/version-4.0.4-success?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-4.0.8-success?style=for-the-badge)](#)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-blue?style=for-the-badge)](#zero-dependencies)
 [![License](https://img.shields.io/badge/license-MIT-purple?style=for-the-badge)](LICENSE)
 
