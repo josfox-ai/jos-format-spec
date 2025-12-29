@@ -2,8 +2,29 @@
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 const JOS_HOME = path.join(process.env.HOME, '.jos');
 
-// AURORA Design System
-const C = {
+// Terminal capability detection
+const supportsUnicode = () => {
+    const term = process.env.TERM || '';
+    const lang = process.env.LANG || '';
+    // Explicitly check for lack of UTF-8 first
+    if (lang && !lang.includes('UTF-8') && !lang.includes('utf8')) {
+        return false;
+    }
+    // Check for UTF-8 support indicators
+    return lang.includes('UTF-8') || lang.includes('utf8') ||
+        term.includes('xterm') || term.includes('256color') ||
+        (process.platform === 'darwin' && !lang);
+};
+
+const supports256Color = () => {
+    const term = process.env.TERM || '';
+    const colorterm = process.env.COLORTERM || '';
+    return term.includes('256color') || colorterm === 'truecolor' ||
+        colorterm === '24bit' || process.platform === 'darwin';
+};
+
+// AURORA Design System with fallback
+const C = supports256Color() ? {
     reset: '\x1b[0m',
     bold: '\x1b[1m',
     dim: '\x1b[2m',
@@ -15,14 +36,27 @@ const C = {
     gray: '\x1b[38;5;245m',
     pink: '\x1b[38;5;213m',
     teal: '\x1b[38;5;44m',
+} : {
+    // Basic 16-color fallback for Raspberry Pi, etc.
+    reset: '\x1b[0m',
+    bold: '\x1b[1m',
+    dim: '\x1b[2m',
+    purple: '\x1b[35m',
+    magenta: '\x1b[35m',
+    cyan: '\x1b[36m',
+    blue: '\x1b[34m',
+    white: '\x1b[37m',
+    gray: '\x1b[90m',
+    pink: '\x1b[35m',
+    teal: '\x1b[36m',
 };
 
 // Aurora palette for random Kitsune colors 🦊
 const AURORA_COLORS = [C.purple, C.magenta, C.cyan, C.blue, C.pink, C.teal];
 const randomAurora = () => AURORA_COLORS[Math.floor(Math.random() * AURORA_COLORS.length)];
 
-// The legendary Kitsune fox
-const KITSUNE_FOX = `
+// Unicode Kitsune fox (for modern terminals)
+const KITSUNE_UNICODE = `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠙⠻⢶⣄⡀⠀⠀⠀⢀⣤⠶⠛⠛⡇⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣇⠀⠀⣙⣿⣦⣤⣴⣿⣁⠀⠀⣸⠇⠀⠀⠀
@@ -39,10 +73,23 @@ const KITSUNE_FOX = `
 ⠀⠀⠀⠀⠙⠿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠋⠉⠁⠀⠀⠀⠀⠈⠛⠃⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
 
+// ASCII fallback for terminals without Unicode (like Raspberry Pi)
+const KITSUNE_ASCII = `
+        /\\___/\\
+       (  o o  )
+       (  =^=  ) 
+        )     (
+       (       )
+      ( KITSUNE )
+       (       )
+        \\_____/
+    JOS // AI Agent`;
+
 const getKitsuneBanner = () => {
     const color = randomAurora();
-    return `${color}${KITSUNE_FOX}${C.reset}
-                            ${C.dim}Made with ❤️ & AI${C.reset}`;
+    const fox = supportsUnicode() ? KITSUNE_UNICODE : KITSUNE_ASCII;
+    return `${color}${fox}${C.reset}
+                            ${C.dim}Made with <3 & AI${C.reset}`;
 };
 
 const ALIASES = { server: 'serve' };

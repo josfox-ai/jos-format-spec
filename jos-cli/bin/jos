@@ -1,9 +1,34 @@
 #!/usr/bin/env node
-const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
+/**
+ * JOS-CLI — Stoic Kernel for AI Agent Orchestration
+ * Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)
+ * 
+ * Minimal 77-line kernel with JOSFOX Internet captive portal support.
+ * Zero dependencies beyond Node.js built-ins.
+ */
+
+const fs = require('fs'), path = require('path'), { spawn, execSync } = require('child_process');
 const JOS_HOME = path.join(process.env.HOME, '.jos');
 
-// AURORA Design System
-const C = {
+// Terminal capability detection
+const supportsUnicode = () => {
+    const term = process.env.TERM || '';
+    const lang = process.env.LANG || '';
+    if (lang && !lang.includes('UTF-8') && !lang.includes('utf8')) return false;
+    return lang.includes('UTF-8') || lang.includes('utf8') ||
+        term.includes('xterm') || term.includes('256color') ||
+        (process.platform === 'darwin' && !lang);
+};
+
+const supports256Color = () => {
+    const term = process.env.TERM || '';
+    const colorterm = process.env.COLORTERM || '';
+    return term.includes('256color') || colorterm === 'truecolor' ||
+        colorterm === '24bit' || process.platform === 'darwin';
+};
+
+// AURORA Design System with fallback
+const C = supports256Color() ? {
     reset: '\x1b[0m',
     bold: '\x1b[1m',
     dim: '\x1b[2m',
@@ -15,14 +40,32 @@ const C = {
     gray: '\x1b[38;5;245m',
     pink: '\x1b[38;5;213m',
     teal: '\x1b[38;5;44m',
+    green: '\x1b[38;5;78m',
+    red: '\x1b[38;5;196m',
+    yellow: '\x1b[38;5;220m',
+} : {
+    reset: '\x1b[0m',
+    bold: '\x1b[1m',
+    dim: '\x1b[2m',
+    purple: '\x1b[35m',
+    magenta: '\x1b[35m',
+    cyan: '\x1b[36m',
+    blue: '\x1b[34m',
+    white: '\x1b[37m',
+    gray: '\x1b[90m',
+    pink: '\x1b[35m',
+    teal: '\x1b[36m',
+    green: '\x1b[32m',
+    red: '\x1b[31m',
+    yellow: '\x1b[33m',
 };
 
 // Aurora palette for random Kitsune colors 🦊
 const AURORA_COLORS = [C.purple, C.magenta, C.cyan, C.blue, C.pink, C.teal];
 const randomAurora = () => AURORA_COLORS[Math.floor(Math.random() * AURORA_COLORS.length)];
 
-// The legendary Kitsune fox
-const KITSUNE_FOX = `
+// Unicode Kitsune fox (for modern terminals)
+const KITSUNE_UNICODE = `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠙⠻⢶⣄⡀⠀⠀⠀⢀⣤⠶⠛⠛⡇⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣇⠀⠀⣙⣿⣦⣤⣴⣿⣁⠀⠀⣸⠇⠀⠀⠀
@@ -39,46 +82,73 @@ const KITSUNE_FOX = `
 ⠀⠀⠀⠀⠙⠿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠋⠉⠁⠀⠀⠀⠀⠈⠛⠃⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
 
+// ASCII fallback for terminals without Unicode (like Raspberry Pi)
+const KITSUNE_ASCII = `
+        /\\___/\\
+       (  o o  )
+       (  =^=  ) 
+        )     (
+       (       )
+      ( KITSUNE )
+       (       )
+        \\_____/
+    JOS // AI Agent`;
+
 const getKitsuneBanner = () => {
     const color = randomAurora();
-    return `${color}${KITSUNE_FOX}${C.reset}
-                            ${C.dim}Made with ❤️ & AI${C.reset}`;
+    const fox = supportsUnicode() ? KITSUNE_UNICODE : KITSUNE_ASCII;
+    return `${color}${fox}${C.reset}
+                            ${C.dim}Made with <3 & AI${C.reset}`;
 };
 
-const ALIASES = { server: 'serve' };
+const ALIASES = {
+    server: 'serve',
+    'enable-josfox-internet': 'enable-JOSFOX-internet',
+    'josfox-internet': 'enable-JOSFOX-internet',
+    'internet': 'enable-JOSFOX-internet'
+};
+
 const rawCmd = process.argv[2];
-const cmd = ALIASES[rawCmd] || rawCmd;
+const cmd = ALIASES[rawCmd?.toLowerCase()] || rawCmd;
 
 if (!cmd) {
     console.log(getKitsuneBanner());
     console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
-    console.log(`  ${C.white}${C.bold}JOS${C.reset} ${C.cyan}KERNEL v4.0${C.reset} ${C.gray}// Stoic Architecture${C.reset}`);
+    console.log(`  ${C.white}${C.bold}JOS-CLI${C.reset} ${C.cyan}v1.0.8${C.reset} ${C.gray}// Stoic Kernel${C.reset}`);
+    console.log(`  ${C.dim}Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)${C.reset}`);
     console.log(`${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
-    console.log(`\n${C.white}${C.bold}  Usage:${C.reset} ${C.cyan}jos${C.reset} ${C.gray}<command>${C.reset} ${C.dim}[options]${C.reset}\n`);
+    console.log(`\n${C.white}${C.bold}  Usage:${C.reset} ${C.cyan}jos-cli${C.reset} ${C.gray}<command>${C.reset} ${C.dim}[options]${C.reset}\n`);
     console.log(`${C.white}${C.bold}  Commands:${C.reset}`);
-    console.log(`    ${C.cyan}serve${C.reset}    ${C.gray}Start local development server${C.reset}`);
-    console.log(`    ${C.cyan}server${C.reset}   ${C.gray}Alias for serve${C.reset}`);
-    console.log(`    ${C.magenta}secrets${C.reset}  ${C.gray}Manage encrypted credentials${C.reset}`);
-    console.log(`    ${C.blue}get${C.reset}      ${C.gray}Fetch packages from repos${C.reset}`);
-    console.log(`    ${C.purple}run${C.reset}      ${C.gray}Execute .jos artifacts${C.reset}\n`);
-    console.log(`${C.dim}  Run ${C.cyan}jos <cmd> --help${C.reset}${C.dim} for command-specific options${C.reset}\n`);
+    console.log(`    ${C.green}enable-JOSFOX-internet${C.reset}  ${C.gray}Set up captive portal on supported routers${C.reset}`);
+    console.log(`    ${C.cyan}serve${C.reset}                   ${C.gray}Start local development server${C.reset}`);
+    console.log(`    ${C.magenta}secrets${C.reset}                 ${C.gray}Manage encrypted credentials${C.reset}`);
+    console.log(`    ${C.blue}get${C.reset}                     ${C.gray}Fetch packages from repos${C.reset}`);
+    console.log(`    ${C.purple}run${C.reset}                     ${C.gray}Execute .jos artifacts${C.reset}\n`);
+    console.log(`${C.white}${C.bold}  JOSFOX Internet:${C.reset}`);
+    console.log(`    ${C.dim}Transform your WiFi router into a monetizable captive portal${C.reset}`);
+    console.log(`    ${C.dim}Supports GL.iNet routers (Mango, Shadow, Slate)${C.reset}\n`);
+    console.log(`${C.dim}  Run ${C.cyan}jos-cli <cmd> --help${C.reset}${C.dim} for command-specific options${C.reset}\n`);
     process.exit(0);
 }
 
 // Look for command in multiple locations (priority order)
-const PKG_COMMANDS = path.join(__dirname, '..', 'src', 'commands');  // npm package
-const USER_COMMANDS = path.join(JOS_HOME, 'commands');               // user installed
+const PKG_COMMANDS = path.join(__dirname, '..', 'src', 'commands');
+const USER_COMMANDS = path.join(JOS_HOME, 'commands');
 
 function findCommand(name) {
     // 1. Check user's ~/.jos/commands first (allows overrides)
     const userPath = path.join(USER_COMMANDS, name, 'index.js');
     if (fs.existsSync(userPath)) return userPath;
 
-    // 2. Check npm package src/commands
+    // 2. Check user commands with .js extension
+    const userPathJs = path.join(USER_COMMANDS, `${name}.js`);
+    if (fs.existsSync(userPathJs)) return userPathJs;
+
+    // 3. Check npm package src/commands
     const pkgPath = path.join(PKG_COMMANDS, `${name}.js`);
     if (fs.existsSync(pkgPath)) return pkgPath;
 
-    // 3. Check npm package src/ directly (for serve.js)
+    // 4. Check npm package src/ directly (for serve.js)
     const srcPath = path.join(__dirname, '..', 'src', `${name}.js`);
     if (fs.existsSync(srcPath)) return srcPath;
 
@@ -89,7 +159,9 @@ const cmdPath = findCommand(cmd);
 if (!cmdPath) {
     const color = randomAurora();
     console.log(`\n${color}  ✖${C.reset} ${C.white}Unknown command:${C.reset} ${C.cyan}${rawCmd}${C.reset}`);
-    console.log(`${C.dim}    Try: ${C.cyan}jos --help${C.reset}${C.dim} to see available commands${C.reset}\n`);
+    console.log(`${C.dim}    Try: ${C.cyan}jos-cli --help${C.reset}${C.dim} to see available commands${C.reset}\n`);
     process.exit(1);
 }
-require(cmdPath).execute(process.argv.slice(3), JOS_HOME);
+
+// Execute command
+require(cmdPath).execute(process.argv.slice(3), JOS_HOME, { C, supportsUnicode, supports256Color });

@@ -34,10 +34,48 @@ const cmd = args[0];
 const help = args.includes('-h') || args.includes('--help');
 const dryRun = args.includes('--dry-run');
 
-// Paths
-const JOS_BIN = path.resolve(__dirname, '../../jos/bin/jos');
-const RELEASE_DIR = path.resolve(__dirname, '../../jos/examples/release');
-const DEFAULT_ORCH = path.join(RELEASE_DIR, 'orchestration.jos');
+// Smart JOS binary detection
+function findJosBinary() {
+    // 1. Check if @josfox/jos is installed as dependency
+    try {
+        const josPkg = require.resolve('@josfox/jos/bin/jos');
+        return { type: 'dependency', path: josPkg };
+    } catch (e) { }
+
+    // 2. Check global installation
+    try {
+        execSync('which jos', { stdio: 'pipe' });
+        return { type: 'global', path: 'jos' };
+    } catch (e) { }
+
+    // 3. Check local monorepo path (for development)
+    const localPath = path.resolve(__dirname, '../../jos/bin/jos');
+    if (fs.existsSync(localPath)) {
+        return { type: 'local', path: localPath };
+    }
+
+    // 4. Fallback to npx
+    return { type: 'npx', path: 'npx @josfox/jos' };
+}
+
+// Get default orchestration path
+function findDefaultOrchestration() {
+    // Check local development path
+    const localPath = path.resolve(__dirname, '../../jos/examples/release/orchestration.jos');
+    if (fs.existsSync(localPath)) return localPath;
+
+    // Check current directory
+    if (fs.existsSync('orchestration.jos')) return path.resolve('orchestration.jos');
+
+    // Check ~/.jos/orchestration.jos
+    const homePath = path.join(JOS_HOME, 'orchestration.jos');
+    if (fs.existsSync(homePath)) return homePath;
+
+    return null;
+}
+
+const JOS_INFO = findJosBinary();
+const DEFAULT_ORCH = findDefaultOrchestration();
 
 function printBanner() {
     console.log(`
@@ -144,14 +182,31 @@ function showDefinitions(artifact) {
 
 // Run artifact with jos
 function runArtifact(artifactPath, flowName, options = {}) {
-    const args = ['run', artifactPath, '--flow', flowName];
-    if (options.dryRun) args.push('--dry-run');
-    if (options.insecure) args.push('--insecure');
+    const runArgs = ['run', artifactPath, '--flow', flowName];
+    if (options.dryRun) runArgs.push('--dry-run');
+    if (options.insecure) runArgs.push('--insecure');
 
-    console.log(`\n${C.cyan}▶ Executing:${C.reset} jos ${args.join(' ')}\n`);
+    console.log(`\n${C.cyan}▶ Executing:${C.reset} jos ${runArgs.join(' ')}\n`);
 
     try {
-        execSync(`node "${JOS_BIN}" ${args.join(' ')}`, { stdio: 'inherit' });
+        let cmd;
+        switch (JOS_INFO.type) {
+            case 'dependency':
+                cmd = `node "${JOS_INFO.path}" ${runArgs.join(' ')}`;
+                break;
+            case 'global':
+                cmd = `jos ${runArgs.join(' ')}`;
+                break;
+            case 'local':
+                cmd = `node "${JOS_INFO.path}" ${runArgs.join(' ')}`;
+                break;
+            case 'npx':
+            default:
+                cmd = `npx @josfox/jos ${runArgs.join(' ')}`;
+                console.log(`${C.dim}(Using npx - install @josfox/jos globally for faster execution)${C.reset}\n`);
+                break;
+        }
+        execSync(cmd, { stdio: 'inherit' });
     } catch (e) {
         console.log(`\n${C.red}✖ Execution failed${C.reset}`);
         process.exit(1);
@@ -192,10 +247,22 @@ function showStatus() {
     console.log(`${C.bold}System Status:${C.reset}\n`);
 
     // Check jos binary
-    if (fs.existsSync(JOS_BIN)) {
-        console.log(`  ${C.green}✓${C.reset} jos kernel: ${C.gray}${JOS_BIN}${C.reset}`);
-    } else {
-        console.log(`  ${C.red}✖${C.reset} jos kernel not found`);
+    // Show JOS kernel status
+    switch (JOS_INFO.type) {
+        case 'dependency':
+            console.log(`  ${C.green}✓${C.reset} jos kernel: ${C.gray}@josfox/jos (dependency)${C.reset}`);
+            break;
+        case 'global':
+            console.log(`  ${C.green}✓${C.reset} jos kernel: ${C.gray}global installation${C.reset}`);
+            break;
+        case 'local':
+            console.log(`  ${C.green}✓${C.reset} jos kernel: ${C.gray}${JOS_INFO.path}${C.reset}`);
+            break;
+        case 'npx':
+        default:
+            console.log(`  ${C.yellow}⚠${C.reset} jos kernel: ${C.gray}will use npx (slower)${C.reset}`);
+            console.log(`    ${C.dim}Run: npm install -g @josfox/jos${C.reset}`);
+            break;
     }
 
     // Check default orchestration

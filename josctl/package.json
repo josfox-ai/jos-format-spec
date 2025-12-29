@@ -1,7 +1,7 @@
 {
   "name": "josctl",
-  "version": "0.0.4",
-  "description": "Orchestration Controller for JOS pipelines and services",
+  "version": "0.0.5",
+  "description": "Orchestration Controller for JOS pipelines and services. Standalone CLI - works with or without @josfox/jos installed.",
   "author": "JOS Open Standards Foundation <jos@josfox.mx>",
   "license": "MIT",
   "bin": {
@@ -13,13 +13,21 @@
     "devops",
     "ai",
     "automation",
-    "orchestration"
+    "orchestration",
+    "pipeline"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/josfox-ai/jos.git"
   },
+  "homepage": "https://github.com/josfox-ai/jos#readme",
+  "bugs": {
+    "url": "https://github.com/josfox-ai/jos/issues"
+  },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "optionalDependencies": {
+    "@josfox/jos": "^4.0.0"
   }
 }
