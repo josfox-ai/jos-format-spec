@@ -1,0 +1,125 @@
+{
+  "$schema": "https://josfox.ai/schemas/jos-0.0.7.json",
+  "$comment": "Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)",
+  "jos": {
+    "open": "jos run atom",
+    "supports": [
+      "@josfox/jos",
+      "josctl"
+    ],
+    "canonical": "Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)"
+  },
+  "orchestration_contract": {
+    "version": "0.0.7",
+    "mode": "sync"
+  },
+  "id_jos": "atom-publish-josfox-alias-v1",
+  "adaptive_ai": {
+    "learning_mode": "frozen",
+    "llm_friendly_sentence": "This artifact publishes the josfox alias package to npm registry with version 1.0.3"
+  },
+  "security": {
+    "type": "open",
+    "permissions": [
+      "fs:read",
+      "fs:write",
+      "net:npm-publish"
+    ],
+    "health_check": null,
+    "integrity": null,
+    "integrity_ref": "./publish-josfox-alias.jos.sig.json"
+  },
+  "files": [],
+  "orchestration": {
+    "state": {
+      "current_status": "idle"
+    },
+    "definitions": {
+      "preflight": {
+        "type": "shell",
+        "description": "Verify package.json exists and npm is authenticated",
+        "command": "cd /Users/jos/Documents/dev/jos/josfox-alias && echo '🔍 Preflight: Checking josfox...' && cat package.json | head -5"
+      },
+      "version_bump": {
+        "type": "shell",
+        "description": "Bump josfox to version 1.0.6",
+        "command": "cd /Users/jos/Documents/dev/jos/josfox-alias && npm version 1.0.6 --no-git-tag-version --allow-same-version && echo '✅ josfox bumped to 1.0.6'"
+      },
+      "publish": {
+        "type": "shell",
+        "description": "Publish josfox to npm registry (LIVE)",
+        "command": "cd /Users/jos/Documents/dev/jos/josfox-alias && npm publish --access public"
+      },
+      "postflight": {
+        "type": "shell",
+        "description": "Verify publication succeeded",
+        "command": "echo '✅ josfox alias publish step complete'"
+      }
+    },
+    "flows": {
+      "main": {
+        "description": "Full publish flow with validation",
+        "steps": [
+          "preflight",
+          "version_bump",
+          "publish",
+          "postflight"
+        ]
+      },
+      "dry_run": {
+        "description": "Simulated publish without actual npm publish",
+        "steps": [
+          "preflight",
+          "version_bump",
+          "postflight"
+        ]
+      }
+    },
+    "pipelines": {
+      "publish": {
+        "description": "Alias for main flow",
+        "steps": [
+          "preflight",
+          "version_bump",
+          "publish",
+          "postflight"
+        ]
+      }
+    }
+  },
+  "x_run_params": {
+    "timeout": 300,
+    "retry_on_failure": false
+  },
+  "meta": {
+    "version": "1.0.0",
+    "type": "atom",
+    "name": "publish-josfox-alias",
+    "provider": "local",
+    "author": "JOS Release Engineering",
+    "canonical_version": "Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)"
+  },
+  "artifacts": {
+    "description": "Publishes josfox alias package to npm registry. This allows users to run 'npx josfox serve' as an alias for @josfox/jos.",
+    "outputs": [
+      "npm:josfox@1.0.3"
+    ]
+  },
+  "guardrails": {
+    "avoid": [
+      "git-tag-creation",
+      "force-publish"
+    ],
+    "max_retries": 1,
+    "require_clean_git": true
+  },
+  "intention": {
+    "objective": "Publish the josfox alias package version 1.0.3 to npm registry",
+    "success_criteria": "npm publish returns exit code 0 and package is visible via npm view"
+  },
+  "capabilities": [
+    "npm",
+    "publish",
+    "version-bump"
+  ]
+}

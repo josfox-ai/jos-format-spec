@@ -1,0 +1,32 @@
+{
+    "name": "@josfox/jos-cli",
+    "version": "1.0.7",
+    "description": "JOS Kernel - Minimal 77-line stoic kernel for AI agent orchestration. Zero dependencies.",
+    "license": "MIT",
+    "author": "JOS Open Standards Foundation",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/josfox-ai/jos.git"
+    },
+    "homepage": "https://josfox.ai",
+    "keywords": [
+        "jos",
+        "josfox",
+        "kernel",
+        "cli",
+        "ai",
+        "agent",
+        "minimal",
+        "stoic"
+    ],
+    "bin": {
+        "jos": "bin/jos"
+    },
+    "files": [
+        "bin/"
+    ],
+    "type": "commonjs",
+    "engines": {
+        "node": ">=18"
+    }
+}

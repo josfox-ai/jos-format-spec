@@ -1,0 +1,194 @@
+{
+  "$schema": "https://josfox.ai/schemas/jos-0.0.7.json",
+  "$comment": "Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)",
+  "jos": {
+    "open": "jos run pipeline",
+    "supports": [
+      "@josfox/jos",
+      "josctl"
+    ],
+    "canonical": "Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)"
+  },
+  "orchestration_contract": {
+    "version": "0.0.7",
+    "mode": "sync"
+  },
+  "id_jos": "orch-publish-all-v1",
+  "adaptive_ai": {
+    "learning_mode": "frozen",
+    "llm_friendly_sentence": "This orchestrator coordinates the release of the entire JOS package universe: @josfox/jos, @josfox/jos-cli, and josfox alias packages."
+  },
+  "security": {
+    "type": "open",
+    "permissions": [
+      "fs:read",
+      "net:npm-publish"
+    ],
+    "health_check": null,
+    "integrity": null,
+    "integrity_ref": "./orchestration.jos.sig.json"
+  },
+  "files": [
+    "./publish-jos.jos",
+    "./publish-jos-cli.jos",
+    "./publish-josfox-alias.jos"
+  ],
+  "orchestration": {
+    "state": {
+      "current_status": "idle",
+      "last_run": null,
+      "last_result": null
+    },
+    "definitions": {
+      "preflight_banner": {
+        "type": "shell",
+        "description": "Display orchestration banner",
+        "command": "echo '\\n🚀 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n   JOS UNIVERSE RELEASE ORCHESTRATION\\n   Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)\\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n'"
+      },
+      "preflight_auth_check": {
+        "type": "shell",
+        "description": "Verify npm authentication",
+        "command": "npm whoami || echo '⚠️  Not logged in to npm - dry-run only'"
+      },
+      "validate_atoms": {
+        "type": "shell",
+        "description": "Validate all atom artifacts before execution",
+        "command": "cd /Users/jos/Documents/dev/jos/jos/examples/release && echo '🔍 Validating artifacts...' && node /Users/jos/Documents/dev/jos/jos/bin/jos validate publish-jos.jos && node /Users/jos/Documents/dev/jos/jos/bin/jos validate publish-jos-cli.jos && node /Users/jos/Documents/dev/jos/jos/bin/jos validate publish-josfox-alias.jos"
+      },
+      "run_publish_jos": {
+        "type": "jos",
+        "description": "Execute publish-jos.jos atom",
+        "artifact": "./publish-jos.jos"
+      },
+      "run_publish_jos_cli": {
+        "type": "jos",
+        "description": "Execute publish-jos-cli.jos atom",
+        "artifact": "./publish-jos-cli.jos"
+      },
+      "run_publish_josfox_alias": {
+        "type": "jos",
+        "description": "Execute publish-josfox-alias.jos atom",
+        "artifact": "./publish-josfox-alias.jos"
+      },
+      "postflight_verify": {
+        "type": "shell",
+        "description": "Verify all packages are published",
+        "command": "echo '\\n📦 Verifying published packages...' && npm view @josfox/jos version 2>/dev/null || echo '@josfox/jos: pending' && npm view @josfox/jos-cli version 2>/dev/null || echo '@josfox/jos-cli: pending' && npm view josfox version 2>/dev/null || echo 'josfox: pending'"
+      },
+      "postflight_summary": {
+        "type": "shell",
+        "description": "Display completion summary",
+        "command": "echo '\\n✅ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n   RELEASE ORCHESTRATION COMPLETE\\n   All sub-artifacts executed successfully.\\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n'"
+      },
+      "view_packages": {
+        "type": "shell",
+        "description": "View all published package versions from npm registry",
+        "command": "echo '📦 Published Packages:' && npm view @josfox/jos version && npm view @josfox/jos-cli version && npm view josfox version"
+      },
+      "summary_report": {
+        "type": "shell",
+        "description": "Generate summary report of all published JOS packages",
+        "command": "echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' && echo '📊 JOS RELEASE SUMMARY REPORT' && echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' && echo \"@josfox/jos: $(npm view @josfox/jos version 2>/dev/null || echo 'not published')\" && echo \"@josfox/jos-cli: $(npm view @josfox/jos-cli version 2>/dev/null || echo 'not published')\" && echo \"josfox: $(npm view josfox version 2>/dev/null || echo 'not published')\" && echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'"
+      },
+      "run_publish_josctl": {
+        "type": "jos",
+        "description": "Execute publish-josctl.jos atom",
+        "artifact": "./publish-josctl.jos"
+      }
+    },
+    "flows": {
+      "main": {
+        "description": "Full release orchestration with validation and verification",
+        "steps": [
+          "preflight_banner",
+          "preflight_auth_check",
+          "validate_atoms",
+          "run_publish_jos",
+          "run_publish_jos_cli",
+          "run_publish_josfox_alias",
+          "postflight_verify",
+          "postflight_summary",
+          "run_publish_josctl"
+        ]
+      },
+      "validate_only": {
+        "description": "Only validate artifacts without execution",
+        "steps": [
+          "preflight_banner",
+          "validate_atoms"
+        ]
+      },
+      "verify_only": {
+        "description": "Only verify current published versions",
+        "steps": [
+          "postflight_verify",
+          "view_packages",
+          "summary_report"
+        ]
+      },
+      "publish_all": {
+        "steps": [
+          "run_publish_josctl"
+        ]
+      }
+    },
+    "pipelines": {
+      "publish_all": {
+        "description": "Publish all 3 JOS packages in correct dependency order",
+        "steps": [
+          "preflight_banner",
+          "preflight_auth_check",
+          "validate_atoms",
+          "run_publish_jos",
+          "run_publish_jos_cli",
+          "run_publish_josfox_alias",
+          "postflight_verify",
+          "postflight_summary"
+        ]
+      }
+    }
+  },
+  "x_run_params": {
+    "timeout": 600,
+    "retry_on_failure": false
+  },
+  "meta": {
+    "version": "1.0.0",
+    "type": "pipeline",
+    "name": "orchestration-publish-all",
+    "provider": "local",
+    "author": "JOS Release Engineering",
+    "canonical_version": "Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)"
+  },
+  "artifacts": {
+    "description": "Master orchestrator that coordinates the release of the entire JOS universe. Runs 3 atomic publish artifacts in dependency order with preflight validation and postflight verification.",
+    "inputs": [
+      "publish-jos.jos",
+      "publish-jos-cli.jos",
+      "publish-josfox-alias.jos"
+    ],
+    "outputs": [
+      "npm:@josfox/jos",
+      "npm:@josfox/jos-cli",
+      "npm:josfox"
+    ]
+  },
+  "guardrails": {
+    "avoid": [
+      "parallel-publish",
+      "skip-validation"
+    ],
+    "max_retries": 0,
+    "require_all_atoms_valid": true
+  },
+  "intention": {
+    "objective": "Coordinate the verified release of all JOS packages (@josfox/jos, @josfox/jos-cli, josfox) in the correct dependency order",
+    "success_criteria": "All sub-artifacts execute successfully in order, and npm view confirms published versions"
+  },
+  "capabilities": [
+    "orchestration",
+    "release",
+    "validation",
+    "verification"
+  ]
+}

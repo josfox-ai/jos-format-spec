@@ -1,0 +1,20 @@
+{
+    "name": "josfox",
+    "version": "1.0.6",
+    "description": "Alias for @josfox/jos - Stoic kernel for AI agent orchestration. Run: npx josfox serve",
+    "license": "MIT",
+    "author": "JOS Open Standards Foundation",
+    "bin": {
+        "josfox": "bin/josfox"
+    },
+    "dependencies": {
+        "@josfox/jos": "^4.0.4"
+    },
+    "keywords": [
+        "josfox",
+        "jos",
+        "cli",
+        "ai",
+        "agent"
+    ]
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://josfox.ai/schemas/jos-0.0.7.json",
+  "jos": {
+    "open": "jos run atom",
+    "supports": ["@josfox/jos", "josctl"]
+  },
+  "orchestration_contract": {
+    "version": "0.0.7",
+    "mode": "sync"
+  },
+  "security": {
+    "type": "open",
+    "permissions": ["fs:read"],
+    "health_check": null,
+    "integrity": null
+  },
+  "files": [],
+  "orchestration": {
+    "state": { "current_status": "idle" },
+    "definitions": {
+      "system_info": {
+        "type": "shell",
+        "command": "echo \"OS: $(uname -s) | Arch: $(uname -m) | Node: $(node -v)\""
+      }
+    },
+    "flows": {
+      "main": {
+        "steps": ["system_info"]
+      }
+    }
+  },
+  "meta": {
+    "version": "1.0.0",
+    "type": "atom",
+    "name": "sysinfo",
+    "provider": "local",
+    "author": "JOS Examples"
+  },
+  "artifacts": {
+    "description": "Reports basic system information"
+  },
+  "guardrails": {
+    "avoid": [],
+    "max_retries": 0
+  },
+  "intention": {
+    "objective": "Retrieve and display system OS, architecture, and Node version",
+    "success_criteria": "Outputs OS name, architecture, and Node.js version"
+  },
+  "capabilities": ["system", "shell"]
+}

@@ -1,0 +1,98 @@
+#!/usr/bin/env node
+const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
+const JOS_HOME = path.join(process.env.HOME, '.jos');
+
+// AURORA Design System
+const C = {
+    reset: '\x1b[0m',
+    bold: '\x1b[1m',
+    dim: '\x1b[2m',
+    purple: '\x1b[38;5;135m',
+    magenta: '\x1b[38;5;198m',
+    cyan: '\x1b[38;5;51m',
+    blue: '\x1b[38;5;39m',
+    white: '\x1b[38;5;255m',
+    gray: '\x1b[38;5;245m',
+    pink: '\x1b[38;5;213m',
+    teal: '\x1b[38;5;44m',
+};
+
+// Aurora palette for random Kitsune colors 🦊
+const AURORA_COLORS = [C.purple, C.magenta, C.cyan, C.blue, C.pink, C.teal];
+const randomAurora = () => AURORA_COLORS[Math.floor(Math.random() * AURORA_COLORS.length)];
+
+// The legendary Kitsune fox
+const KITSUNE_FOX = `
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠙⠻⢶⣄⡀⠀⠀⠀⢀⣤⠶⠛⠛⡇⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣇⠀⠀⣙⣿⣦⣤⣴⣿⣁⠀⠀⣸⠇⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣡⣾⣿⣿⣿⣿⣿⣿⣿⣷⣌⠋⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣷⣄⡈⢻⣿⡟⢁⣠⣾⣿⣦⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⠘⣿⠃⣿⣿⣿⣿⡏⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠈⠛⣰⠿⣆⠛⠁⠀⡀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣦⠀⠘⠛⠋⠀⣴⣿⠁⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣶⣾⣿⣿⣿⣿⡇⠀⠀⠀⢸⣿⣏⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⠀⠀⠀⠾⢿⣿⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⣠⣿⣿⣿⣿⣿⣿⡿⠟⠋⣁⣠⣤⣤⡶⠶⠶⣤⣄⠈⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢰⣿⣿⣮⣉⣉⣉⣤⣴⣶⣿⣿⣋⡥⠄⠀⠀⠀⠀⠉⢻⣄⠀⠀⠀⠀⠀
+⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣋⣁⣤⣀⣀⣤⣤⣤⣤⣄⣿⡄⠀⠀⠀⠀
+⠀⠀⠀⠀⠙⠿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠋⠉⠁⠀⠀⠀⠀⠈⠛⠃⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
+
+const getKitsuneBanner = () => {
+    const color = randomAurora();
+    return `${color}${KITSUNE_FOX}${C.reset}
+                            ${C.dim}Made with ❤️ & AI${C.reset}`;
+};
+
+const ALIASES = { server: 'serve' };
+const rawCmd = process.argv[2];
+const cmd = ALIASES[rawCmd] || rawCmd;
+
+if (!cmd) {
+    console.log(getKitsuneBanner());
+    console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
+    console.log(`  ${C.white}${C.bold}JOS${C.reset} ${C.cyan}KERNEL v4.0${C.reset} ${C.gray}// Stoic Architecture${C.reset}`);
+    console.log(`  ${C.dim}Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)${C.reset}`);
+    console.log(`${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
+    console.log(`\n${C.white}${C.bold}  Usage:${C.reset} ${C.cyan}jos${C.reset} ${C.gray}<command>${C.reset} ${C.dim}[options]${C.reset}\n`);
+    console.log(`${C.white}${C.bold}  Commands:${C.reset}`);
+    console.log(`    ${C.cyan}serve${C.reset}      ${C.gray}Start local development server${C.reset}`);
+    console.log(`    ${C.cyan}init${C.reset}       ${C.gray}Create new .jos artifact${C.reset}`);
+    console.log(`    ${C.cyan}add${C.reset}        ${C.gray}Add task to .jos artifact${C.reset}`);
+    console.log(`    ${C.cyan}validate${C.reset}   ${C.gray}Validate .jos artifact${C.reset}`);
+    console.log(`    ${C.purple}run${C.reset}        ${C.gray}Execute .jos artifacts${C.reset}`);
+    console.log(`    ${C.magenta}secrets${C.reset}    ${C.gray}Manage encrypted credentials${C.reset}`);
+    console.log(`    ${C.blue}get${C.reset}        ${C.gray}Fetch packages from repos${C.reset}\n`);
+    console.log(`${C.dim}  Run ${C.cyan}jos <cmd> --help${C.reset}${C.dim} for command-specific options${C.reset}\n`);
+    process.exit(0);
+}
+
+// Look for command in multiple locations (priority order)
+const PKG_COMMANDS = path.join(__dirname, '..', 'src', 'commands');  // npm package
+const USER_COMMANDS = path.join(JOS_HOME, 'commands');               // user installed
+
+function findCommand(name) {
+    // 1. Check user's ~/.jos/commands first (allows overrides)
+    const userPath = path.join(USER_COMMANDS, name, 'index.js');
+    if (fs.existsSync(userPath)) return userPath;
+
+    // 2. Check npm package src/commands
+    const pkgPath = path.join(PKG_COMMANDS, `${name}.js`);
+    if (fs.existsSync(pkgPath)) return pkgPath;
+
+    // 3. Check npm package src/ directly (for serve.js)
+    const srcPath = path.join(__dirname, '..', 'src', `${name}.js`);
+    if (fs.existsSync(srcPath)) return srcPath;
+
+    return null;
+}
+
+const cmdPath = findCommand(cmd);
+if (!cmdPath) {
+    const color = randomAurora();
+    console.log(`\n${color}  ✖${C.reset} ${C.white}Unknown command:${C.reset} ${C.cyan}${rawCmd}${C.reset}`);
+    console.log(`${C.dim}    Try: ${C.cyan}jos --help${C.reset}${C.dim} to see available commands${C.reset}\n`);
+    process.exit(1);
+}
+require(cmdPath).execute(process.argv.slice(3), JOS_HOME);

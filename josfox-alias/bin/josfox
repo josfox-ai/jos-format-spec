@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+// Simple passthrough to @josfox/jos
+require('@josfox/jos/bin/jos');
