@@ -50,6 +50,7 @@ npx @josfox/jos-cli --help
 - `jos-cli serve` — Development server
 - `jos-cli prompts` — Prompt optimization
 - `jos-cli secrets` — Credential management
+- `jos-cli agent` — **NEW** Resilient daemon services (see [jos-agent.md](./jos-agent.md))
 
 ### `enable-JOSFOX-internet`
 

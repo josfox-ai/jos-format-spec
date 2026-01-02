@@ -5,6 +5,14 @@ All notable changes to the `.jos` specification and packages.
 ## [Unreleased]
 
 ### Added
+- **`jos agent` command** — Resilient daemon service management
+  - `install` — Install .jos as persistent daemon (systemd, procd, launchd)
+  - `uninstall` — Remove installed agent
+  - `status` — Show agent status
+  - `logs` — View agent logs
+  - `list` — List all installed agents
+  - `run` — Run agent in daemon mode
+- **docs/cli/jos-agent.md** — Agent command documentation
 - **`jos prompts` command** — Prompt optimization via open API
   - `optimize` — Improve prompts in existing .jos artifacts
   - `validate` — Check prompt quality against standards
@@ -13,7 +21,6 @@ All notable changes to the `.jos` specification and packages.
 - **PROMPTS_API.md** — Open standard specification for prompt optimization services
 - **LLMs.md** — LLM implementation guide with A2A and MCP integration examples
 - LLM.md for AI agent-friendly specification reference
-- JOSFOX Internet captive portal support in jos-cli
 - Raspberry Pi terminal compatibility (ASCII/16-color fallback)
 - Standalone josctl operation (no jos dependency required)
 
