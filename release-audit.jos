@@ -62,6 +62,21 @@
         "command": "echo '=== NPM PUBLISHED VERSIONS ===' && npm view @josfox/jos version 2>/dev/null && npm view @josfox/jos-cli version 2>/dev/null && npm view josctl version 2>/dev/null && npm view josfox version 2>/dev/null || echo 'Some packages not yet published'",
         "description": "Check npm registry for published versions"
       },
+      "check_doc_structure": {
+        "type": "shell",
+        "command": "echo '=== DOCUMENTATION STRUCTURE ===' && echo 'README sections:' && grep -E '^## ' README.md | head -15 && echo '' && echo 'CLI docs:' && ls docs/cli/*.md 2>/dev/null || echo 'No CLI docs found'",
+        "description": "Verify documentation has proper sections"
+      },
+      "check_command_examples": {
+        "type": "shell",
+        "command": "echo '=== COMMAND EXAMPLES CHECK ===' && grep -c 'jos run\\|jos validate\\|jos agent\\|josctl' README.md && echo 'command examples found in README' && grep -c 'jos run\\|jos validate\\|jos agent\\|josctl' docs/cli/*.md 2>/dev/null | tail -1 || echo 'Check CLI docs for examples'",
+        "description": "Verify command examples are present in documentation"
+      },
+      "check_spec_relationship": {
+        "type": "shell",
+        "command": "echo '=== SPEC RELATIONSHIP CHECK ===' && echo 'Links to specification:' && grep -c 'SPECIFICATION.md\\|GOVERNANCE.md\\|LLMs.md' README.md && echo 'spec references in README' && grep -c 'Fractal\\|Intention\\|MAGIC\\|JOSFOXAI' README.md && echo 'core concept references'",
+        "description": "Verify sections explain relationship to specification"
+      },
       "generate_report": {
         "type": "shell",
         "command": "echo '' && echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' && echo 'RELEASE AUDIT COMPLETE' && echo 'Review output above for any issues' && echo 'Fix any mismatches before npm publish' && echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'",
@@ -80,6 +95,9 @@
           "validate_readme",
           "check_citation",
           "npm_view_versions",
+          "check_doc_structure",
+          "check_command_examples",
+          "check_spec_relationship",
           "generate_report"
         ]
       },

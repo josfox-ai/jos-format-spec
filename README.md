@@ -44,6 +44,171 @@ The standard introduces a **dual-kernel architecture**: every valid artifact con
 
 ---
 
+## Fractal Architecture & Intention AI
+
+### The Theory
+
+The `.jos` standard is built on a fundamental insight: **AI automation operates across multiple scales, but the same principles apply at every level**. From a single prompt to a multi-agent swarm, every unit of AI work shares three invariants:
+
+1. **Intention** — What outcome is desired?
+2. **Constraints** — What is forbidden or limited?
+3. **Verification** — How do we know it succeeded?
+
+This is the **fractal property** of `.jos`: the same schema describes atoms, pipelines, services, agents, and entire organizations without translation or adaptation.
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     FRACTAL .jos UNIVERSE                           │
+│                                                                     │
+│   Organization (.jos)                                               │
+│   └── Department (.jos)                                             │
+│       └── Team (.jos)                                               │
+│           └── Service (.jos)                                        │
+│               └── Pipeline (.jos)                                   │
+│                   └── Nano Agent (.jos)                             │
+│                       └── Prompt (.jos)                             │
+│                                                                     │
+│   SAME SCHEMA → SAME VALIDATION → SAME EXECUTION                    │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Why Intention AI?
+
+Traditional AI automation follows the **prompt-centric model**:
+
+```
+Human → Prompt → LLM → Output → ???
+```
+
+This model fails because:
+- The prompt encodes *what to do*, not *what success looks like*
+- The output is evaluated subjectively ("looks good")
+- There's no mechanism for constraint enforcement
+- Results cannot be reproduced
+
+The `.jos` standard introduces the **intention-centric model**:
+
+```
+Human → Intention → .jos Artifact → Constrained Execution → Verified Output
+              ↓           ↓                ↓                    ↓
+         objective   guardrails      budget limits         success criteria
+```
+
+| Component | Prompt Model | Intention Model (.jos) |
+|-----------|--------------|------------------------|
+| Input | Natural language | Structured intention + constraints |
+| Execution | Unconstrained | Bounded by guardrails + budget |
+| Output | Arbitrary | Must satisfy success criteria |
+| Verification | Human review | Machine-evaluable |
+| Reproducibility | ~0% | ~100% |
+
+### Relevance and Scenarios
+
+Intention AI is critical when:
+
+| Scenario | Why Intention Matters |
+|----------|----------------------|
+| **Production systems** | Cannot tolerate unpredictable behavior |
+| **Multi-agent coordination** | Agents must agree on success criteria |
+| **Regulated industries** | Audit trails require explicit constraints |
+| **Budget-sensitive tasks** | Must limit API calls, tokens, time |
+| **Edge devices** | Resources are constrained by design |
+
+### The Dual-Kernel Advantage
+
+Every `.jos` artifact contains two complementary kernels:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         .jos ARTIFACT                               │
+│                                                                     │
+│   ┌────────────────────────┐   ┌────────────────────────────────┐  │
+│   │     MAGIC Kernel       │   │      JOSFOXAI Kernel           │  │
+│   │     (Why + What)       │   │      (How + Who)               │  │
+│   │                        │   │                                │  │
+│   │ • intention            │   │ • jos                          │  │
+│   │ • success_criteria     │   │ • orchestration_contract       │  │
+│   │ • guardrails           │   │ • orchestration                │  │
+│   │ • artifacts            │   │ • security                     │  │
+│   │ • capabilities         │   │ • files                        │  │
+│   │ • meta                 │   │                                │  │
+│   └────────────────────────┘   └────────────────────────────────┘  │
+│                                                                     │
+│   MAGIC answers: What are we trying to achieve?                     │
+│   JOSFOXAI answers: How do we execute it safely?                    │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Efficiency gains:**
+
+| Mechanism | Effect | Example |
+|-----------|--------|---------|
+| **Guardrails** | Prevent wasted computation | `avoid: ["external-api-calls"]` blocks network |
+| **Budget** | Limit token/API spend | `max_retries: 2` caps retry loops |
+| **Success criteria** | Early termination | Stop when `lighthouse > 90` achieved |
+| **Composition** | Reuse verified units | Import `utils.jos` instead of re-prompting |
+
+### From Prompt to Nano Agent
+
+The `.jos` standard enables a progression from simple prompts to fully autonomous agents:
+
+```bash
+# Level 1: Single prompt execution
+jos run greet.jos                    # "Echo hello world"
+
+# Level 2: Multi-step pipeline
+jos run deploy.jos --flow production # Lint → Build → Test → Deploy
+
+# Level 3: Persistent service
+josctl run api-service.jos           # Long-running with health checks
+
+# Level 4: Nano Agent (autonomous, remote-configured)
+jos agent install captive-portal.jos --hub https://hub.example.com
+```
+
+A **Nano Agent** is a `.jos` artifact that:
+- Runs as a persistent daemon
+- Connects to a remote hub for configuration
+- Applies desired-state with rollback safety
+- Reports telemetry and status
+
+See [NANO_AGENTS.md](./docs/concepts/NANO_AGENTS.md) for the full concept.
+
+### How .jos Relates to A2A
+
+The [A2A Protocol](https://google.github.io/A2A/) (Agent-to-Agent) defines **how agents discover and communicate**. The `.jos` standard defines **what agents exchange and execute**.
+
+```
+A2A Protocol:  "Here's a task for you"    (transport)
+.jos Artifact: "Here's exactly what to do" (payload)
+```
+
+| Protocol | Layer | .jos Relationship |
+|----------|-------|-------------------|
+| **A2A** | Transport | `.jos` as A2A Task payload |
+| **MCP** | Tool Access | `.jos` guardrails as MCP policies |
+
+**A2A + .jos Example:**
+
+```json
+// A2A Task containing .jos artifact
+{
+  "jsonrpc": "2.0",
+  "method": "tasks/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "parts": [{
+        "type": "application/jos",
+        "data": { /* valid .jos artifact */ }
+      }]
+    }
+  }
+}
+```
+
+---
+
 ## Table of Contents
 
 1. [The Problem](#1-the-problem)
