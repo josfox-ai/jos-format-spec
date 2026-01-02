@@ -80,7 +80,7 @@ const DEFAULT_ORCH = findDefaultOrchestration();
 function printBanner() {
     console.log(`
 ${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}
-${C.bold}josctl${C.reset} ${C.cyan}v1.0.0${C.reset} // Orchestration Controller
+${C.bold}josctl${C.reset} ${C.cyan}v0.0.5${C.reset} // Orchestration Controller
 ${C.gray}Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)${C.reset}
 ${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}
 `);
