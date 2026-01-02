@@ -99,7 +99,7 @@ const cmd = ALIASES[rawCmd] || rawCmd;
 if (!cmd) {
     console.log(getKitsuneBanner());
     console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
-    console.log(`  ${C.white}${C.bold}JOS${C.reset} ${C.cyan}KERNEL v4.0${C.reset} ${C.gray}// Stoic Architecture${C.reset}`);
+    console.log(`  ${C.white}${C.bold}JOS${C.reset} ${C.cyan}KERNEL v4.0.8${C.reset} ${C.gray}// Stoic Architecture${C.reset}`);
     console.log(`  ${C.dim}Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)${C.reset}`);
     console.log(`${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
     console.log(`\n${C.white}${C.bold}  Usage:${C.reset} ${C.cyan}jos${C.reset} ${C.gray}<command>${C.reset} ${C.dim}[options]${C.reset}\n`);

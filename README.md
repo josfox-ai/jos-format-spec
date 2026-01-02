@@ -430,12 +430,13 @@ You can build your own `.jos` runtime. The format is vendor-unlocked.
 |----------|-------------|
 | [SPECIFICATION.md](./jos/SPECIFICATION.md) | Full technical specification |
 | [LLMs.md](./jos/LLMs.md) | LLM implementation guide with A2A/MCP examples |
-| [LLM.md](./LLM.md) | Quick LLM reference |
+| [LLM.md](./docs/LLM.md) | Quick LLM reference |
 | [PROMPTS_API.md](./jos/PROMPTS_API.md) | Prompt optimization API specification |
-| [NANO_AGENTS.md](./NANO_AGENTS.md) | Nano Agent concept and comparison |
+| [NANO_AGENTS.md](./docs/concepts/NANO_AGENTS.md) | Nano Agent concept and comparison |
 | [GOVERNANCE.md](./jos/GOVERNANCE.md) | Foundation governance model |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guide |
 | [CHANGELOG.md](./CHANGELOG.md) | Version history |
+| [CLI Documentation](./docs/cli/) | jos, josctl, jos-cli reference |
 
 ---
 

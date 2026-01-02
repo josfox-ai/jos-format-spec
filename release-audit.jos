@@ -24,7 +24,7 @@
     "definitions": {
       "check_versions": {
         "type": "shell",
-        "command": "echo '=== VERSION CHECK ===' && grep -E '\"version\"' jos/package.json jos-cli/package.json josctl/package.json josfox-alias/package.json",
+        "command": "echo '=== VERSION CHECK ===' && grep -E '\"version\"' jos/package.json jos-cli/package.json josctl/package.json",
         "description": "Verify package.json versions match documentation"
       },
       "check_banners": {
