@@ -163,31 +163,33 @@ jos agent run <artifact.jos> --hub <url>
 
 ```json
 {
-  "jos": { "open": "jos agent run", "supports": ["@josfox/jos-cli"] },
-  "kind": "jos.agent.desired_state",
-  "meta": {
-    "name": "my-service",
-    "version": 42
+  "$schema": "https://josfox.ai/schemas/jos-0.0.7.json",
+  "jos": {
+    "open": "jos agent run",
+    "supports": ["@josfox/jos-cli"]
   },
-  "spec": {
-    "apply": [
-      { "type": "shell", "command": "..." },
-      { "type": "file", "path": "...", "content": "..." },
-      { "type": "service", "name": "...", "action": "restart" }
-    ],
-    "health_check": {
-      "type": "http",
-      "url": "http://localhost:8080/health"
+  "orchestration_contract": { "version": "0.0.7", "mode": "sync" },
+  "id_jos": "my-service-v42",
+  "security": { "type": "signed", "permissions": ["shell:execute"] },
+  "files": [],
+  "orchestration": {
+    "definitions": {
+      "apply_config": { "type": "shell", "command": "echo 'Applying...'" },
+      "health_check": { "type": "shell", "command": "curl -sf http://localhost:8080/health" }
     },
-    "telemetry": {
-      "interval": 60
+    "flows": {
+      "main": { "steps": ["apply_config", "health_check"] }
     }
   },
-  "signature": {
-    "alg": "ed25519",
-    "key_id": "hub-root",
-    "sig": "base64..."
-  }
+  "meta": { "version": "42", "type": "agent", "name": "my-service" },
+  "artifacts": { "description": "Desired-state config" },
+  "guardrails": { "avoid": [], "max_retries": 2 },
+  "intention": {
+    "objective": "Apply configuration for my-service",
+    "success_criteria": "Health check returns 200"
+  },
+  "capabilities": ["agent"],
+  "signature": { "alg": "ed25519", "key_id": "hub-root", "sig": "base64..." }
 }
 ```
 
