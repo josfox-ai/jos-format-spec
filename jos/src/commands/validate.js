@@ -32,7 +32,7 @@ function logWitness(home, eventType, data) {
     fs.appendFileSync(path.join(runDir, 'events.jsonl'), JSON.stringify(event) + '\n');
 }
 
-// Required keys for JOSFOXAI + MAGIC compliance
+// Required keys for JOSFOXAI + MAGIC compliance (ALL REQUIRED - NO EXCEPTIONS)
 const JOSFOXAI_KEYS = ['jos', 'orchestration_contract', 'security', 'files', 'orchestration', 'x_run_params', 'adaptive_ai', 'id_jos'];
 const MAGIC_KEYS = ['meta', 'artifacts', 'guardrails', 'intention', 'capabilities'];
 const ALL_REQUIRED_KEYS = [...JOSFOXAI_KEYS, ...MAGIC_KEYS];
@@ -45,7 +45,7 @@ exports.execute = async (args, home) => {
     if (!target || args.includes('--help')) {
         console.log(`
 ${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}
-${C.bold}JOS VALIDATE${C.reset} // Validate .jos artifacts
+${C.bold}JOS VALIDATE${C.reset} // Validate .jos artifacts (STRICT)
 ${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}
 
 ${C.bold}Usage:${C.reset}
@@ -55,17 +55,21 @@ ${C.bold}Options:${C.reset}
   --insecure    Skip integrity verification
   --verbose     Show detailed validation information
 
+${C.bold}ALL REQUIRED Keys:${C.reset}
+  JOSFOXAI: ${JOSFOXAI_KEYS.join(', ')}
+  MAGIC: ${MAGIC_KEYS.join(', ')}
+
 ${C.bold}Validates:${C.reset}
   1. JSON syntax
-  2. JOSFOXAI keys: ${JOSFOXAI_KEYS.join(', ')}
-  3. MAGIC keys: ${MAGIC_KEYS.join(', ')}
+  2. ALL JOSFOXAI keys (8 required)
+  3. ALL MAGIC keys (5 required)
   4. Integrity manifest (unless --insecure)
 `);
         return;
     }
 
     console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
-    console.log(`${C.bold}JOS VALIDATE${C.reset} // ${C.gray}Format v0.0.7 — Spec v0.1.0 (Alpha)${C.reset}`);
+    console.log(`${C.bold}JOS VALIDATE${C.reset} // ${C.gray}Format v0.0.7 — STRICT MODE${C.reset}`);
     console.log(`${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
     console.log(`\n${C.cyan}📋 Artifact:${C.reset} ${target}`);
 
@@ -89,7 +93,7 @@ ${C.bold}Validates:${C.reset}
         process.exit(1);
     }
 
-    // 2. JOSFOXAI Keys Check
+    // 2. JOSFOXAI Keys Check (ALL 8 REQUIRED)
     const missingJosfoxai = JOSFOXAI_KEYS.filter(k => !artifact[k]);
     if (missingJosfoxai.length > 0) {
         console.log(`${C.red}  ✖ Missing JOSFOXAI Keys: ${missingJosfoxai.join(', ')}${C.reset}`);
@@ -102,7 +106,7 @@ ${C.bold}Validates:${C.reset}
         logWitness(home, 'check_passed', { check: 'josfoxai_keys' });
     }
 
-    // 3. MAGIC Keys Check
+    // 3. MAGIC Keys Check (ALL 5 REQUIRED)
     const missingMagic = MAGIC_KEYS.filter(k => !artifact[k]);
     if (missingMagic.length > 0) {
         console.log(`${C.red}  ✖ Missing MAGIC Keys: ${missingMagic.join(', ')}${C.reset}`);

@@ -1,0 +1,227 @@
+{
+  "jos": {
+    "open": "jos agent install",
+    "supports": ["@josfox/jos", "@josfox/alaia"]
+  },
+  "id_jos": "jos-agent-svc-v1",
+  "orchestration_contract": {
+    "version": "0.0.7",
+    "mode": "daemon"
+  },
+  "adaptive_ai": {
+    "learning_enabled": false,
+    "feedback_collection": true
+  },
+  "meta": {
+    "name": "JOS Agent Service",
+    "version": "1.0.0",
+    "type": "service",
+    "description": "Universal agent service for cloud-provisioned .jos artifact execution",
+    "author": "JOS Open Standards Foundation",
+    "license": "MIT",
+    "created": "2026-01-03"
+  },
+  "intention": {
+    "objective": "Register device with JOS Cloud, run as managed service, and execute provisioned .jos artifacts",
+    "success_criteria": "Agent is running as service, registered with cloud, and can receive/execute .jos artifacts",
+    "context": "Platform-agnostic agent supporting Windows, macOS, Linux, Raspberry Pi, and OpenWrt"
+  },
+  "guardrails": {
+    "avoid": ["run_without_registration", "execute_unsigned_artifacts", "bypass_guardrails"],
+    "max_retries": 3,
+    "require_confirmation": false
+  },
+  "platforms": {
+    "windows": {
+      "service_manager": "windows-service",
+      "install_path": "%ProgramFiles%\\JOS\\",
+      "config_path": "%ProgramData%\\JOS\\",
+      "log_path": "%ProgramData%\\JOS\\logs\\",
+      "service_name": "JOSAgentSvc"
+    },
+    "macos": {
+      "service_manager": "launchd",
+      "install_path": "/usr/local/bin/",
+      "config_path": "~/Library/Application Support/JOS/",
+      "log_path": "~/Library/Logs/JOS/",
+      "plist_path": "~/Library/LaunchAgents/mx.jos.agent.plist"
+    },
+    "linux": {
+      "service_manager": "systemd",
+      "install_path": "/usr/local/bin/",
+      "config_path": "~/.jos/",
+      "log_path": "/var/log/jos/",
+      "unit_file": "/etc/systemd/system/jos-agent.service"
+    },
+    "raspberry_pi": {
+      "service_manager": "systemd",
+      "install_path": "/usr/local/bin/",
+      "config_path": "/etc/jos/",
+      "log_path": "/var/log/jos/",
+      "unit_file": "/etc/systemd/system/jos-agent.service",
+      "gpio_enabled": true
+    },
+    "openwrt": {
+      "service_manager": "init.d",
+      "install_path": "/usr/bin/",
+      "config_path": "/etc/jos/",
+      "log_path": "/tmp/log/jos/",
+      "init_script": "/etc/init.d/jos-agent"
+    }
+  },
+  "cloud": {
+    "registration_endpoint": "https://cloud.josfox.mx/api/agents/register",
+    "provisioning_endpoint": "https://cloud.josfox.mx/api/agents/{agent_id}/provision",
+    "heartbeat_endpoint": "https://cloud.josfox.mx/api/agents/{agent_id}/heartbeat",
+    "heartbeat_interval_ms": 30000,
+    "poll_interval_ms": 60000
+  },
+  "orchestration": {
+    "definitions": {
+      "detect_platform": {
+        "type": "shell",
+        "command_windows": "echo windows",
+        "command_darwin": "echo macos",
+        "command_linux": "cat /etc/os-release 2>/dev/null | grep -q 'openwrt' && echo openwrt || (cat /proc/cpuinfo | grep -q 'Raspberry' && echo raspberry_pi || echo linux)",
+        "description": "Detect current platform type"
+      },
+      "generate_agent_id": {
+        "type": "shell",
+        "command_windows": "powershell -Command \"[guid]::NewGuid().ToString()\"",
+        "command_unix": "uuidgen || cat /proc/sys/kernel/random/uuid",
+        "description": "Generate unique agent identifier"
+      },
+      "collect_system_info": {
+        "type": "shell",
+        "command_windows": "powershell -Command \"Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version | ConvertTo-Json\"",
+        "command_unix": "uname -a && hostname",
+        "description": "Collect system information for registration"
+      },
+      "register_agent": {
+        "type": "shell",
+        "command": "curl -X POST ${CLOUD_ENDPOINT}/api/agents/register -H 'Content-Type: application/json' -d '{\"agent_id\": \"${AGENT_ID}\", \"platform\": \"${PLATFORM}\", \"hostname\": \"${HOSTNAME}\", \"version\": \"1.0.0\"}'",
+        "description": "Register agent with JOS Cloud"
+      },
+      "install_service_windows": {
+        "type": "shell",
+        "command": "powershell -ExecutionPolicy Bypass -File install/windows/install-agent.ps1 -Action Install",
+        "description": "Install Windows service"
+      },
+      "install_service_macos": {
+        "type": "shell",
+        "command": "bash install/macos/install-agent.sh install",
+        "description": "Install macOS launchd service"
+      },
+      "install_service_linux": {
+        "type": "shell",
+        "command": "bash install/linux/install-agent.sh install",
+        "description": "Install Linux systemd service"
+      },
+      "install_service_openwrt": {
+        "type": "shell",
+        "command": "sh install/openwrt/install-agent.sh install",
+        "description": "Install OpenWrt init.d service"
+      },
+      "start_service": {
+        "type": "shell",
+        "command_windows": "sc start JOSAgentSvc",
+        "command_macos": "launchctl load ~/Library/LaunchAgents/mx.jos.agent.plist",
+        "command_linux": "systemctl start jos-agent",
+        "command_openwrt": "/etc/init.d/jos-agent start",
+        "description": "Start agent service"
+      },
+      "stop_service": {
+        "type": "shell",
+        "command_windows": "sc stop JOSAgentSvc",
+        "command_macos": "launchctl unload ~/Library/LaunchAgents/mx.jos.agent.plist",
+        "command_linux": "systemctl stop jos-agent",
+        "command_openwrt": "/etc/init.d/jos-agent stop",
+        "description": "Stop agent service"
+      },
+      "service_status": {
+        "type": "shell",
+        "command_windows": "sc query JOSAgentSvc",
+        "command_macos": "launchctl list | grep mx.jos.agent",
+        "command_linux": "systemctl status jos-agent",
+        "command_openwrt": "/etc/init.d/jos-agent status",
+        "description": "Check service status"
+      },
+      "poll_provisioning": {
+        "type": "shell",
+        "command": "curl -s ${CLOUD_ENDPOINT}/api/agents/${AGENT_ID}/provision",
+        "description": "Poll cloud for provisioned artifacts"
+      },
+      "execute_artifact": {
+        "type": "shell",
+        "command": "jos run ${ARTIFACT_PATH}",
+        "description": "Execute a provisioned .jos artifact"
+      },
+      "send_heartbeat": {
+        "type": "shell",
+        "command": "curl -X POST ${CLOUD_ENDPOINT}/api/agents/${AGENT_ID}/heartbeat -H 'Content-Type: application/json' -d '{\"status\": \"online\", \"timestamp\": \"${TIMESTAMP}\"}'",
+        "description": "Send heartbeat to cloud"
+      }
+    },
+    "flows": {
+      "install": {
+        "description": "Install agent service on current platform",
+        "steps": ["detect_platform", "generate_agent_id", "collect_system_info", "install_service_${PLATFORM}"]
+      },
+      "register": {
+        "description": "Register agent with JOS Cloud",
+        "steps": ["collect_system_info", "register_agent"]
+      },
+      "start": {
+        "description": "Start agent service",
+        "steps": ["start_service"]
+      },
+      "stop": {
+        "description": "Stop agent service",
+        "steps": ["stop_service"]
+      },
+      "status": {
+        "description": "Check agent service status",
+        "steps": ["service_status"]
+      },
+      "daemon_loop": {
+        "description": "Main daemon loop - heartbeat and poll for work",
+        "steps": ["send_heartbeat", "poll_provisioning", "execute_artifact"]
+      }
+    }
+  },
+  "environment": {
+    "CLOUD_ENDPOINT": {
+      "description": "JOS Cloud API endpoint",
+      "default": "https://cloud.josfox.mx"
+    },
+    "AGENT_ID": {
+      "description": "Unique agent identifier (generated on install)",
+      "default": ""
+    },
+    "PLATFORM": {
+      "description": "Detected platform (windows/macos/linux/raspberry_pi/openwrt)",
+      "default": ""
+    }
+  },
+  "x_run_params": {
+    "timeout": 30000,
+    "retry_on_failure": true,
+    "daemon_mode": true
+  },
+  "security": {
+    "type": "registered",
+    "permissions": ["network", "service_management", "file_read", "file_write"],
+    "require_registration": true
+  },
+  "files": [],
+  "artifacts": {
+    "description": "JOS Agent Service - Universal cloud-connected agent for .jos execution"
+  },
+  "capabilities": [
+    "platform_detection",
+    "cloud_registration",
+    "service_management",
+    "artifact_provisioning",
+    "heartbeat_telemetry"
+  ]
+}

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.jos Open Standard | The Intention Format for AI Automation</title>
+    <meta name="description" content="The .jos Open Standard defines a portable, self-describing artifact format for encoding intention and execution as a single atomic unit.">
+    <meta property="og:title" content=".jos Open Standard">
+    <meta property="og:description" content="The Intention Format for AI Automation">
+    <meta property="og:type" content="website">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #050608;
+            --fg: #ffffff;
+            --primary: #8b5cf6;
+            --accent: #06b6d4;
+            --muted: #9ca3af;
+            --border: #374151;
+            --gold: #fbbf24;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* KRMEN L1: Canvas */
+        .canvas {
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+                var(--bg);
+            min-height: 100vh;
+        }
+        
+        /* KRMEN L2: Glass decoration */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        /* Header */
+        header {
+            padding: 24px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            background: rgba(5, 6, 8, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--fg);
+        }
+        
+        /* Hero */
+        .hero {
+            padding: 180px 0 120px;
+            text-align: center;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--fg) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--muted);
+            max-width: 640px;
+            margin: 0 auto 48px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--glass-bg);
+            color: var(--fg);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Features */
+        .features {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 48px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .feature-card {
+            padding: 32px;
+            transition: transform 0.2s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+        
+        .feature-card p {
+            color: var(--muted);
+        }
+        
+        /* Code block */
+        .code-section {
+            padding: 80px 0;
+        }
+        
+        pre {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+        }
+        
+        code {
+            color: var(--accent);
+        }
+        
+        /* Architecture */
+        .architecture {
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .arch-diagram {
+            padding: 48px;
+            margin-top: 32px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            text-align: left;
+            font-size: 0.75rem;
+            line-height: 1.4;
+        }
+        
+        /* Stats */
+        .stats {
+            padding: 80px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 32px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--muted);
+            margin-top: 8px;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+        
+        footer p {
+            color: var(--muted);
+        }
+        
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas">
+        <header>
+            <div class="container">
+                <nav>
+                    <div class="logo">.jos</div>
+                    <ul class="nav-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#architecture">Architecture</a></li>
+                        <li><a href="https://github.com/josfox-ai/jos-format-spec">GitHub</a></li>
+                        <li><a href="https://www.npmjs.com/package/@josfox/jos">npm</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="container">
+                    <span class="hero-badge">v0.0.7 — Alpha</span>
+                    <h1>The Intention Format<br>for AI Automation</h1>
+                    <p class="hero-subtitle">
+                        A portable, self-describing artifact format for encoding intention and execution as a single atomic unit. 
+                        <strong>Prompts fail. Intentions don't.</strong>
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="https://github.com/josfox-ai/jos-format-spec" class="btn btn-primary">Get Started</a>
+                        <a href="#features" class="btn btn-secondary">Learn More</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" class="features">
+                <div class="container">
+                    <h2 class="section-title">Why .jos?</h2>
+                    <div class="features-grid">
+                        <div class="feature-card glass">
+                            <div class="feature-icon">🎯</div>
+                            <h3>Intention-Native</h3>
+                            <p>Every artifact begins with a clear objective and machine-evaluable success criteria.</p>
+                        </div>
+                        <div class="feature-card glass">
+                            <div class="feature-icon">🔒</div>
+                            <h3>Guardrails Built-In</h3>
+                            <p>Constraints and prohibitions are first-class citizens, not afterthoughts.</p>
+                        </div>
+                        <div class="feature-card glass">
+                            <div class="feature-icon">🌀</div>
+                            <h3>Fractal Composition</h3>
+                            <p>Same schema at all scales — from atoms to organizations.</p>
+                        </div>
+                        <div class="feature-card glass">
+                            <div class="feature-icon">🔄</div>
+                            <h3>A2A Compatible</h3>
+                            <p>Native integration with Google's Agent-to-Agent protocol.</p>
+                        </div>
+                        <div class="feature-card glass">
+                            <div class="feature-icon">⚡</div>
+                            <h3>Zero Dependencies</h3>
+                            <p>Reference implementation runs anywhere with Node.js 18+.</p>
+                        </div>
+                        <div class="feature-card glass">
+                            <div class="feature-icon">🔐</div>
+                            <h3>Integrity Verification</h3>
+                            <p>SHA-256 manifests ensure artifacts haven't been tampered with.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="code-section">
+                <div class="container">
+                    <h2 class="section-title">Minimal .jos Artifact</h2>
+                    <pre><code>{
+  "jos": { "open": "jos run artifact", "supports": ["@josfox/jos"] },
+  "orchestration_contract": { "version": "0.0.7", "mode": "sync" },
+  "meta": { "name": "hello", "version": "1.0.0", "type": "atom" },
+  "intention": {
+    "objective": "Demonstrate .jos execution",
+    "success_criteria": "Console outputs greeting"
+  },
+  "guardrails": { "avoid": [], "max_retries": 0 },
+  "orchestration": {
+    "definitions": {
+      "greet": { "type": "shell", "command": "echo 'Hello from .jos!'" }
+    },
+    "flows": { "main": { "steps": ["greet"] } }
+  },
+  "security": { "type": "open", "permissions": [] }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="architecture" class="architecture">
+                <div class="container">
+                    <h2 class="section-title">Dual-Kernel Architecture</h2>
+                    <div class="arch-diagram glass">
+┌─────────────────────────────────────────────────────────────────────┐
+│                         .jos ARTIFACT                               │
+│                                                                     │
+│   ┌────────────────────────┐   ┌────────────────────────────────┐  │
+│   │     MAGIC Kernel       │   │      JOSFOXAI Kernel           │  │
+│   │     (Why + What)       │   │      (How + Who)               │  │
+│   │                        │   │                                │  │
+│   │ • intention            │   │ • jos                          │  │
+│   │ • success_criteria     │   │ • orchestration_contract       │  │
+│   │ • guardrails           │   │ • orchestration                │  │
+│   │ • artifacts            │   │ • security                     │  │
+│   │ • capabilities         │   │ • files                        │  │
+│   └────────────────────────┘   └────────────────────────────────┘  │
+│                                                                     │
+│   MAGIC answers: What are we trying to achieve?                     │
+│   JOSFOXAI answers: How do we execute it safely?                    │
+└─────────────────────────────────────────────────────────────────────┘</div>
+                </div>
+            </section>
+
+            <section class="stats">
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-card glass">
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">Reproducibility</div>
+                        </div>
+                        <div class="stat-card glass">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Dependencies</div>
+                        </div>
+                        <div class="stat-card glass">
+                            <div class="stat-value">MIT</div>
+                            <div class="stat-label">License</div>
+                        </div>
+                        <div class="stat-card glass">
+                            <div class="stat-value">∞</div>
+                            <div class="stat-label">Fractal Scale</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="container">
+                <p>
+                    <strong>JOS Open Standards Foundation</strong><br>
+                    <a href="https://github.com/josfox-ai/jos-format-spec">GitHub</a> · 
+                    <a href="https://www.npmjs.com/package/@josfox/jos">npm</a> · 
+                    <a href="https://krmen.mx">KRMEN Design System</a>
+                </p>
+                <p style="margin-top: 16px;">Format v0.0.7 — Specification v0.1.0 (Alpha)</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

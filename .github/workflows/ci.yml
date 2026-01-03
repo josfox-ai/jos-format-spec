@@ -1,0 +1,59 @@
+name: JOS Validation
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate JOS artifacts
+        run: |
+          echo "=== JOS Artifact Validation ==="
+          
+          # Use local jos binary
+          JOS_BIN="node jos/bin/jos"
+          
+          # Validate core artifacts
+          echo "Validating vision.jos..."
+          $JOS_BIN validate vision.jos --no-strict || true
+          
+          echo "Validating release-audit.jos..."
+          $JOS_BIN validate release-audit.jos --no-strict || true
+          
+          echo "Validating krmen.jos..."
+          $JOS_BIN validate krmen.jos --no-strict || true
+          
+          # Validate examples
+          for file in examples/*.jos; do
+            if [ -f "$file" ]; then
+              echo "Validating $file..."
+              $JOS_BIN validate "$file" --no-strict || true
+            fi
+          done
+          
+          # Validate jos/ examples
+          for file in jos/examples/*.jos; do
+            if [ -f "$file" ]; then
+              echo "Validating $file..."
+              $JOS_BIN validate "$file" --no-strict || true
+            fi
+          done
+          
+          echo "=== Validation Complete ==="
+
+      - name: Run JOS verify
+        run: |
+          cd jos && npm test

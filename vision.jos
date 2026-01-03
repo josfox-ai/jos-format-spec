@@ -1,7 +1,12 @@
 {
+  "id_jos": "jos-ecosystem-vision-v1",
   "jos": {
     "open": "jos llm vision.jos",
     "supports": ["@josfox/jos", "@josfox/alaia"]
+  },
+  "orchestration_contract": {
+    "version": "0.0.7",
+    "mode": "reference"
   },
   "meta": {
     "name": "JOS Ecosystem Vision",
@@ -9,12 +14,30 @@
     "type": "vision",
     "description": "Crystallized intention for the JOS fractal ecosystem - use this to prompt AI assistants about JOS",
     "author": "Josué Gómez, Founder of JOS Open Standards Foundation",
+    "license": "MIT",
     "created": "2026-01-03"
   },
   "intention": {
     "objective": "Define and communicate the complete JOS fractal ecosystem vision",
     "context": "JOS is an open standard that aims to become the universal language for AI-human collaboration, treating every automation as a versioned, composable intention artifact.",
     "success_criteria": "The AI assistant fully understands the ecosystem components, their relationships, and can generate contextually accurate content about JOS"
+  },
+  "guardrails": {
+    "accuracy": "Always reference the current spec version (v0.0.7)",
+    "tone": "Technical but accessible; avoid jargon without explanation",
+    "avoid": ["overpromising_features", "ignoring_experimental_status", "misrepresenting_maturity"],
+    "max_retries": 0,
+    "require_confirmation": false
+  },
+  "capabilities": [
+    "ecosystem_explanation",
+    "content_generation",
+    "architecture_design",
+    "ai_prompting"
+  ],
+  "artifacts": {
+    "description": "JOS Ecosystem Vision - AI promptable context artifact",
+    "outputs": ["documentation", "explanations", "diagrams"]
   },
   "ecosystem": {
     "philosophy": {
@@ -56,7 +79,6 @@
     }
   },
   "orchestration": {
-    "contracts": { "version": "0.0.7", "mode": "reference" },
     "definitions": {
       "explain_ecosystem": {
         "type": "prompt",
@@ -73,14 +95,24 @@
     },
     "flows": {
       "main": {
-        "description": "Load this artifact to prime an AI assistant with full JOS ecosystem knowledge"
+        "description": "Load this artifact to prime an AI assistant with full JOS ecosystem knowledge",
+        "steps": ["explain_ecosystem"]
       }
     }
   },
-  "guardrails": {
-    "accuracy": "Always reference the current spec version (v0.0.7)",
-    "tone": "Technical but accessible; avoid jargon without explanation",
-    "avoid": ["overpromising_features", "ignoring_experimental_status", "misrepresenting_maturity"]
+  "security": {
+    "type": "open",
+    "permissions": ["read"],
+    "integrity_ref": "./vision.jos.sig.json"
+  },
+  "files": [],
+  "x_run_params": {
+    "timeout": 30000,
+    "retry_on_failure": false
+  },
+  "adaptive_ai": {
+    "learning_enabled": true,
+    "feedback_collection": true
   },
   "examples": {
     "usage": [
