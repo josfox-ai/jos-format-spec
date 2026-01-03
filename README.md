@@ -498,10 +498,11 @@ jos run deploy-app.jos --dry-run
 jos run deploy-app.jos
 ```
 
-### Minimal Artifact
+### Minimal Artifact (VALID - All 13 Keys)
 
 ```json
 {
+  "id_jos": "example-minimal-v1",
   "jos": { "open": "jos run atom", "supports": ["@josfox/jos"] },
   "orchestration_contract": { "version": "0.0.7", "mode": "sync" },
   "meta": { "name": "example", "version": "1.0.0", "type": "atom" },
@@ -510,16 +511,18 @@ jos run deploy-app.jos
     "success_criteria": "Console outputs greeting"
   },
   "guardrails": { "avoid": [], "max_retries": 0 },
+  "capabilities": ["demo"],
+  "artifacts": { "description": "Minimal example" },
   "orchestration": {
     "definitions": {
       "greet": { "type": "shell", "command": "echo 'Hello from .jos!'" }
     },
     "flows": { "main": { "steps": ["greet"] } }
   },
-  "security": { "type": "open", "permissions": [] },
+  "security": { "type": "open", "permissions": [], "integrity_ref": null },
   "files": [],
-  "artifacts": { "description": "Minimal example" },
-  "capabilities": ["demo"]
+  "x_run_params": { "timeout": 5000, "retry_on_failure": false },
+  "adaptive_ai": { "learning_enabled": false, "feedback_collection": false }
 }
 ```
 
