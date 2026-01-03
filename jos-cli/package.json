@@ -4,6 +4,9 @@
     "description": "Stoic kernel for AI agent orchestration with JOSFOX Internet captive portal support. Zero dependencies.",
     "author": "JOS Open Standards Foundation <jos@josfox.mx>",
     "license": "MIT",
+    "scripts": {
+        "test": "node test.js"
+    },
     "bin": {
         "jos-cli": "bin/jos"
     },

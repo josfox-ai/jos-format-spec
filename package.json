@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@josfox/jos-cli": "^1.1.0"
+  }
+}

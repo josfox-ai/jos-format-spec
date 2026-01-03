@@ -113,10 +113,9 @@ const getKitsuneBanner = () => {
 };
 
 const ALIASES = {
-    server: 'serve',
-    'enable-josfox-internet': 'enable-JOSFOX-internet',
-    'josfox-internet': 'enable-JOSFOX-internet',
-    'internet': 'enable-JOSFOX-internet'
+    // Convenience aliases
+    'service': 'enable-service',
+    'services': 'enable-service'
 };
 
 const rawCmd = process.argv[2];
@@ -130,14 +129,12 @@ if (!cmd || cmd === '--help' || cmd === '-h') {
     console.log(`${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
     console.log(`\n${C.white}${C.bold}  Usage:${C.reset} ${C.cyan}jos-cli${C.reset} ${C.gray}<command>${C.reset} ${C.dim}[options]${C.reset}\n`);
     console.log(`${C.white}${C.bold}  Commands:${C.reset}`);
-    console.log(`    ${C.green}enable-JOSFOX-internet${C.reset}  ${C.gray}Set up captive portal on supported routers${C.reset}`);
-    console.log(`    ${C.cyan}serve${C.reset}                   ${C.gray}Start local development server${C.reset}`);
-    console.log(`    ${C.magenta}secrets${C.reset}                 ${C.gray}Manage encrypted credentials${C.reset}`);
-    console.log(`    ${C.blue}get${C.reset}                     ${C.gray}Fetch packages from repos${C.reset}`);
-    console.log(`    ${C.purple}run${C.reset}                     ${C.gray}Execute .jos artifacts${C.reset}\n`);
-    console.log(`${C.white}${C.bold}  JOSFOX Internet:${C.reset}`);
-    console.log(`    ${C.dim}Transform your WiFi router into a monetizable captive portal${C.reset}`);
-    console.log(`    ${C.dim}Supports GL.iNet routers (Mango, Shadow, Slate)${C.reset}\n`);
+    console.log(`    ${C.cyan}agent${C.reset}           ${C.gray}Install and manage .jos daemon agents${C.reset}`);
+    console.log(`    ${C.green}enable-service${C.reset}  ${C.gray}Enable cloud-provisionable services${C.reset}\n`);
+    console.log(`${C.white}${C.bold}  Agent Subcommands:${C.reset}`);
+    console.log(`    ${C.dim}install, uninstall, status, logs, list, run${C.reset}\n`);
+    console.log(`${C.white}${C.bold}  Available Services:${C.reset}`);
+    console.log(`    ${C.dim}captive-portal, shared-print, kiosk-display, file-share, sensor-hub${C.reset}\n`);
     console.log(`${C.dim}  Run ${C.cyan}jos-cli <cmd> --help${C.reset}${C.dim} for command-specific options${C.reset}\n`);
     process.exit(0);
 }

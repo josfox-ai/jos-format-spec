@@ -20,14 +20,14 @@
 
 # @josfox/jos-cli
 
-**Minimal Stoic Kernel for AI Agent Orchestration**
+**Agent and Service Management for JOS**
 
 [![npm](https://img.shields.io/badge/npm-@josfox/jos--cli-00ffff?style=for-the-badge)](https://www.npmjs.com/package/@josfox/jos-cli)
-[![Version](https://img.shields.io/badge/version-1.0.3-success?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-1.0.8-success?style=for-the-badge)](#)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-blue?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/license-MIT-purple?style=for-the-badge)](LICENSE)
 
-*77 Lines • Zero Dependencies • Pure Node.js*
+*Zero Dependencies • Pure Node.js*
 
 </div>
 
@@ -35,9 +35,9 @@
 
 ## Overview
 
-**@josfox/jos-cli** is the minimal kernel-only distribution of the JOS runtime. It contains the stoic 77-line kernel that routes commands to plugins — nothing more.
+**@josfox/jos-cli** provides daemon agent management and cloud-provisionable services for the JOS ecosystem. Install persistent `.jos`-driven agents on edge devices like Raspberry Pi, OpenWrt routers, and Linux servers.
 
-> For the full developer edition with commands, use [@josfox/jos](https://www.npmjs.com/package/@josfox/jos).
+> For the full developer toolkit (serve, run, validate, secrets), use [@josfox/jos](https://www.npmjs.com/package/@josfox/jos).
 
 ---
 
@@ -45,35 +45,81 @@
 
 ```bash
 npm install -g @josfox/jos-cli
-jos --help
+jos-cli --help
 ```
 
 ---
 
-## What's Included
+## Commands
 
-- `bin/jos` — The 77-line stoic kernel
-- Command routing to `~/.jos/commands/`
-- Aurora design system with Kitsune branding
+### `jos-cli agent`
+
+Install and manage `.jos` daemon agents.
+
+```bash
+# Install an agent as a persistent service
+jos-cli agent install my-service.jos --hub https://hub.example.com
+
+# View agent status
+jos-cli agent status my-service
+
+# List all installed agents
+jos-cli agent list
+
+# View logs
+jos-cli agent logs my-service
+
+# Uninstall
+jos-cli agent uninstall my-service
+```
+
+**Subcommands:** `install`, `uninstall`, `status`, `logs`, `list`, `run`
+
+---
+
+### `jos-cli enable-service`
+
+Enable cloud-provisionable services on the current device.
+
+```bash
+# Interactive service setup
+jos-cli enable-service --service captive-portal
+
+# Fetch config from JOS Cloud
+jos-cli enable-service --from-cloud --agent-id abc123
+
+# Load from local .jos file
+jos-cli enable-service --from-file my-print-service.jos
+
+# List available services
+jos-cli enable-service --list
+```
+
+**Available Services:**
+
+| Service | Description | Platforms |
+|---------|-------------|-----------|
+| `captive-portal` | WiFi captive portal with auth | OpenWrt, Linux, Raspberry Pi |
+| `shared-print` | Cloud print queue | Linux, Raspberry Pi, Windows, macOS |
+| `kiosk-display` | Digital signage | Linux, Raspberry Pi, Windows |
+| `file-share` | Local network file sharing | All platforms |
+| `sensor-hub` | IoT sensor data collection | Raspberry Pi, Linux |
+
+---
+
+## Testing
+
+```bash
+npm test
+```
 
 ---
 
 ## The .jos Standard
 
-This kernel implements the **.jos Open Standard** — a portable artifact format encoding both **intention** (MAGIC) and **execution** (JOSFOXAI) in a single file.
-
-**Dual-Kernel Law:**
-- MAGIC without JOSFOXAI → inert
-- JOSFOXAI without MAGIC → blind
+This CLI implements the **.jos Open Standard** — a portable artifact format encoding both **intention** (MAGIC) and **execution** (JOSFOXAI) in a single file.
 
 > Full specification: [github.com/josfox-ai/jos-format-spec](https://github.com/josfox-ai/jos-format-spec)
-
----
-
-## A2A Compatibility
-
-- **A2A** = transport layer (agent-to-agent communication)
-- **.jos** = payload standard (portable executable intention)
 
 ---
 
