@@ -1,0 +1,46 @@
+{
+  "jos": {
+    "open": "jos status",
+    "supports": ["@josfox/jos"]
+  },
+  "meta": {
+    "name": "Reference Artifact",
+    "version": "1.0.0",
+    "type": "task",
+    "description": "A canonical example of JOS v0.0.7 specification fields"
+  },
+  "intention": {
+    "objective": "Demonstrate all field types in JOS v0.0.7",
+    "success_criteria": "Validators pass this file without warnings"
+  },
+  "requirements": {
+    "packages": ["@josfox/cli"],
+    "system": { "node": ">=18" }
+  },
+  "orchestration": {
+    "contracts": { "version": "0.0.7", "mode": "sync" },
+    "definitions": {
+      "echo_hello": {
+        "type": "shell",
+        "command": "echo Hello JOS",
+        "description": "Simple shell command"
+      },
+      "native_task": {
+        "type": "jos",
+        "artifact": "./subtask.jos",
+        "description": "Nested artifact execution"
+      }
+    },
+    "flows": {
+      "main": {
+        "description": "Primary execution path",
+        "steps": ["echo_hello"]
+      }
+    }
+  },
+  "guardrails": {
+    "max_retries": 3,
+    "timeout_ms": 5000,
+    "avoid": ["interactive_prompts"]
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "jos": {
+    "open": "jos get ollama",
+    "supports": ["@josfox/jos"]
+  },
+  "meta": {
+    "name": "Ollama Setup",
+    "version": "1.0.0",
+    "type": "setup",
+    "description": "Detect, configure, and validate local Ollama installation for JOS",
+    "repo": "josfox-ai/foxtails",
+    "tags": ["llm", "local", "ollama", "adapter"]
+  },
+  "intention": {
+    "objective": "Configure Ollama as a local LLM provider for JOS",
+    "success_criteria": "Ollama is detected, configured, and a test model responds"
+  },
+  "requirements": {
+    "system": {
+      "ram": ">=8GB",
+      "disk": ">=10GB free"
+    },
+    "optional": {
+      "gpu": "NVIDIA (CUDA) or AMD (ROCm) or Apple Metal",
+      "vram": ">=4GB for 3B models, >=8GB for 7B models"
+    }
+  },
+  "orchestration": {
+    "contracts": { "version": "0.0.7", "mode": "sync" },
+    "definitions": {
+      "detect_platform": {
+        "type": "shell",
+        "description": "Detect operating system and architecture",
+        "command": "node -e \"console.log(JSON.stringify({os: process.platform, arch: process.arch}))\""
+      },
+      "check_ollama_installed": {
+        "type": "shell",
+        "description": "Check if Ollama CLI is available",
+        "command": "ollama --version",
+        "on_failure": "warn"
+      },
+      "detect_gpu": {
+        "type": "shell",
+        "description": "Attempt to detect GPU availability",
+        "command": "node -e \"const os = require('os'); const platform = os.platform(); let cmd = ''; if (platform === 'win32') cmd = 'nvidia-smi --query-gpu=name --format=csv,noheader 2>nul || echo CPU_ONLY'; else if (platform === 'darwin') cmd = 'system_profiler SPDisplaysDataType 2>/dev/null | grep Chipset || echo Apple_Silicon_Or_CPU'; else cmd = 'nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null || lspci | grep -i nvidia || echo CPU_ONLY'; require('child_process').execSync(cmd, {stdio: 'inherit'});\"",
+        "on_failure": "continue"
+      },
+      "warn_no_gpu": {
+        "type": "message",
+        "level": "warning",
+        "content": "⚠️  NO GPU DETECTED - Performance will be limited.\n   Ollama will run on CPU only. For best results:\n   - NVIDIA: Install CUDA drivers\n   - AMD: Install ROCm\n   - Apple: Metal is used automatically on M1/M2/M3\n   Consider using smaller models (3B params or less)."
+      },
+      "register_provider": {
+        "type": "shell",
+        "description": "Register Ollama as a JOS prompts provider",
+        "command": "jos prompts provider add local http://localhost:11434 ollama"
+      },
+      "pull_default_model": {
+        "type": "shell",
+        "description": "Pull a lightweight default model",
+        "command": "ollama pull llama3.2:1b",
+        "on_failure": "warn"
+      },
+      "test_connection": {
+        "type": "shell",
+        "description": "Verify Ollama API responds",
+        "command": "curl -s http://localhost:11434/api/tags || echo 'Ollama not running. Start with: ollama serve'"
+      }
+    },
+    "flows": {
+      "main": {
+        "description": "Full Ollama setup flow",
+        "steps": [
+          "detect_platform",
+          "check_ollama_installed",
+          "detect_gpu",
+          "register_provider",
+          "pull_default_model",
+          "test_connection"
+        ]
+      },
+      "detect_only": {
+        "description": "Just detect without installing",
+        "steps": ["detect_platform", "check_ollama_installed", "detect_gpu"]
+      }
+    }
+  },
+  "guardrails": {
+    "max_retries": 1,
+    "timeout_ms": 120000,
+    "avoid": ["sudo", "admin_elevation"]
+  },
+  "examples": {
+    "run_setup": "jos run ollama.jos",
+    "detect_only": "jos run ollama.jos --flow detect_only",
+    "similar_artifacts": [
+      "gemini-cli.jos - Google Gemini CLI setup",
+      "nvidia-toolkit.jos - NVIDIA Container Toolkit",
+      "metal-perf.jos - Apple Metal performance tuning"
+    ]
+  }
+}

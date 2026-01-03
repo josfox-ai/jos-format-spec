@@ -1,0 +1,36 @@
+­ƒªè JOS CLI Verification Suite
+=============================
+
+--- Smoke Tests (Dogfooding) ---
+[BOOT] Handing over control to JOS Kernel...
+
+[38;5;135mÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü[0m
+[38;5;51m[1mJOS RUN[0m // [38;5;245mJOSFOXAI MAGIC Runtime[0m
+[38;5;135mÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü[0m
+
+[38;5;51m­ƒôª Artifact:[0m verification
+[38;5;51m­ƒôä File:[0m verification.jos
+[38;5;51m­ƒåö ID:[0m N/A
+[38;5;51m­ƒöÉ Integrity:[0m [38;5;220mÔÜá open (no integrity_ref)[0m
+[38;5;51mÔ£¿ MAGIC:[0m [38;5;220mÔÜá Partial[0m
+[38;5;51m­ƒÄ» Intention:[0m Verify the integrity of the installed JOS CLI commands
+
+[38;5;51mÔûÂ Flow:[0m [1mmain[0m
+[38;5;245m  Steps: check_add ÔåÆ check_get ÔåÆ check_init ÔåÆ check_prompts ÔåÆ check_repo ÔåÆ check_run ÔåÆ check_secrets ÔåÆ check_validate ÔåÆ check_serve[0m
+
+[38;5;39m  [1] ÔÜí check_add...[0m
+[38;5;196m      Ô£û Failed: Command failed: jos add --help[0m
+
+"jos" no se reconoce como un comando interno o externo,
+programa o archivo por lotes ejecutable.
+
+ÔØî FAILED: verification.jos execution
+
+--- Functional Test (Init + Validate) ---
+[TEST] Verifying: jos init functional test...
+Ô£à PASSED: jos init functional test
+[TEST] Verifying: jos validate functional test...
+Ô£à PASSED: jos validate functional test
+
+=============================
+ÔØî VERIFICATION FAILED

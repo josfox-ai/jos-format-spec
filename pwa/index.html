@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#a855f7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <title>JOS Lite - Artifact Runner</title>
+  <meta name="description" content="Run .jos artifacts on any device - PWA for the JOS Open Standard">
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦊</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="fox">🦊</span>
+        <h1>JOS <span class="lite">Lite</span></h1>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-view="editor">Editor</button>
+        <button class="nav-btn" data-view="validate">Validate</button>
+        <button class="nav-btn" data-view="run">Run</button>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Editor View -->
+      <section id="editor-view" class="view active">
+        <div class="toolbar">
+          <button id="new-btn" class="btn">📄 New</button>
+          <button id="open-btn" class="btn">📂 Open</button>
+          <button id="save-btn" class="btn primary">💾 Save</button>
+          <input type="file" id="file-input" accept=".jos,.fox,.json" hidden>
+        </div>
+        <div class="editor-container">
+          <textarea id="editor" placeholder='{\n  "intention": {\n    "objective": "Your goal here"\n  }\n}'></textarea>
+          <div id="line-numbers"></div>
+        </div>
+        <div id="status-bar" class="status-bar">
+          <span id="file-name">untitled.jos</span>
+          <span id="cursor-pos">Ln 1, Col 1</span>
+          <span id="json-status" class="valid">✓ Valid JSON</span>
+        </div>
+      </section>
+
+      <!-- Validate View -->
+      <section id="validate-view" class="view">
+        <div class="validate-panel">
+          <h2>🔍 Artifact Validation</h2>
+          <div id="validation-results" class="results">
+            <p class="placeholder">Load a .jos file to validate</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Run View -->
+      <section id="run-view" class="view">
+        <div class="run-panel">
+          <h2>▶️ Execute Artifact</h2>
+          <div class="provider-select">
+            <label>Provider:</label>
+            <select id="provider">
+              <option value="simulation">🧪 Simulation (Offline)</option>
+              <option value="gemini">🌐 Gemini API</option>
+              <option value="openai">🌐 OpenAI API</option>
+            </select>
+          </div>
+          <div class="api-key-input" id="api-key-section" style="display:none">
+            <label>API Key:</label>
+            <input type="password" id="api-key" placeholder="Enter your API key">
+          </div>
+          <button id="run-btn" class="btn primary large">▶️ Execute</button>
+          <div id="run-output" class="output">
+            <pre id="output-text"></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <a href="https://github.com/josfox-ai/jos-format-spec" target="_blank">GitHub</a>
+      <span>|</span>
+      <span>JOS v0.0.7</span>
+      <span>|</span>
+      <span id="offline-status">🟢 Online</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

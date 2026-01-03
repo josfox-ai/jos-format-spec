@@ -1,0 +1,105 @@
+{
+  "jos": {
+    "open": "jos get gemini-cli",
+    "supports": ["@josfox/jos"]
+  },
+  "meta": {
+    "name": "Gemini CLI Setup",
+    "version": "1.0.0",
+    "type": "setup",
+    "description": "Configure Google Gemini CLI for JOS integration",
+    "repo": "josfox-ai/foxtails",
+    "tags": ["llm", "cloud", "gemini", "google", "adapter"]
+  },
+  "intention": {
+    "objective": "Install and configure Gemini CLI as a JOS-compatible AI provider",
+    "success_criteria": "Gemini CLI responds to a test prompt via JOS"
+  },
+  "requirements": {
+    "system": {
+      "node": ">=18"
+    },
+    "credentials": {
+      "GOOGLE_API_KEY": "Required for Gemini API access"
+    }
+  },
+  "orchestration": {
+    "contracts": { "version": "0.0.7", "mode": "sync" },
+    "definitions": {
+      "detect_platform": {
+        "type": "shell",
+        "description": "Detect OS for installation method",
+        "command": "node -e \"console.log(JSON.stringify({os: process.platform, arch: process.arch}))\""
+      },
+      "check_gemini_installed": {
+        "type": "shell",
+        "description": "Check if Gemini CLI is available",
+        "command": "gemini --version 2>/dev/null || npx @anthropic-ai/claude-cli --version 2>/dev/null || echo NOT_INSTALLED",
+        "on_failure": "continue"
+      },
+      "install_gemini_cli": {
+        "type": "shell",
+        "description": "Install Gemini CLI globally",
+        "command": "npm install -g @anthropic-ai/claude-cli",
+        "on_failure": "warn"
+      },
+      "check_api_key": {
+        "type": "shell",
+        "description": "Verify GOOGLE_API_KEY is set",
+        "command": "node -e \"if(!process.env.GOOGLE_API_KEY) { console.error('⚠️  GOOGLE_API_KEY not set'); process.exit(1); } else { console.log('✓ API Key configured'); }\""
+      },
+      "register_provider": {
+        "type": "shell",
+        "description": "Register Gemini as a JOS prompts provider",
+        "command": "jos prompts provider add gemini https://generativelanguage.googleapis.com/v1beta native"
+      },
+      "store_api_key": {
+        "type": "shell",
+        "description": "Store API key in JOS secrets vault",
+        "command": "jos secrets set GOOGLE_API_KEY",
+        "interactive": true
+      },
+      "test_connection": {
+        "type": "shell",
+        "description": "Test Gemini API connectivity",
+        "command": "curl -s \"https://generativelanguage.googleapis.com/v1beta/models?key=$GOOGLE_API_KEY\" | head -c 200"
+      }
+    },
+    "flows": {
+      "main": {
+        "description": "Full Gemini CLI setup",
+        "steps": [
+          "detect_platform",
+          "check_gemini_installed",
+          "check_api_key",
+          "register_provider",
+          "test_connection"
+        ]
+      },
+      "fresh_install": {
+        "description": "Install from scratch with API key storage",
+        "steps": [
+          "detect_platform",
+          "install_gemini_cli",
+          "store_api_key",
+          "register_provider",
+          "test_connection"
+        ]
+      }
+    }
+  },
+  "guardrails": {
+    "max_retries": 2,
+    "timeout_ms": 60000,
+    "avoid": ["expose_api_key_in_logs"]
+  },
+  "examples": {
+    "run_setup": "jos run gemini-cli.jos",
+    "fresh_install": "jos run gemini-cli.jos --flow fresh_install",
+    "similar_artifacts": [
+      "ollama.jos - Local Ollama setup",
+      "openai.jos - OpenAI API configuration",
+      "anthropic.jos - Claude API setup"
+    ]
+  }
+}

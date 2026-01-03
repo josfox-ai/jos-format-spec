@@ -7,8 +7,19 @@
  * Zero dependencies beyond Node.js built-ins.
  */
 
-const fs = require('fs'), path = require('path'), { spawn, execSync } = require('child_process');
-const JOS_HOME = path.join(process.env.HOME, '.jos');
+const fs = require('fs'), path = require('path'), os = require('os'), { spawn, execSync } = require('child_process');
+const JOS_HOME = path.join(os.homedir(), '.jos');
+
+// Ensure JOS_HOME exists
+if (!fs.existsSync(JOS_HOME)) {
+    try {
+        fs.mkdirSync(JOS_HOME, { recursive: true });
+        // Also create commands dir since we check it later
+        fs.mkdirSync(path.join(JOS_HOME, 'commands'), { recursive: true });
+    } catch (e) {
+        // Silently fail if we can't create it, might be permission issue
+    }
+}
 
 // Terminal capability detection
 const supportsUnicode = () => {
@@ -111,7 +122,7 @@ const ALIASES = {
 const rawCmd = process.argv[2];
 const cmd = ALIASES[rawCmd?.toLowerCase()] || rawCmd;
 
-if (!cmd) {
+if (!cmd || cmd === '--help' || cmd === '-h') {
     console.log(getKitsuneBanner());
     console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
     console.log(`  ${C.white}${C.bold}JOS-CLI${C.reset} ${C.cyan}v1.0.8${C.reset} ${C.gray}// Stoic Kernel${C.reset}`);

@@ -744,8 +744,9 @@ ${C.white}Examples:${C.reset}
             res.end(HTML('Explorer', `
                 ${cloneAlert}
                 <div class="card" style="border-color:#3fb950; background:rgba(63,185,80,0.1)">
-                    <strong style="color:#3fb950">🚀 Share JOS:</strong> 
-                    <code style="margin-left:10px">curl -L http://${req.headers.host}/__public/install.sh | bash</code>
+                    <strong style="color:#3fb950">🚀 Install JOS CLI:</strong>
+                    <code style="margin-left:10px">npm install -g @josfox/jos</code>
+                    <br><small style="color:#9ca3af;margin-left:2rem">Scripts: <a href="https://github.com/josfox-ai/jos-repo-starter/tree/main/install" style="color:#58a6ff">PowerShell</a> | <a href="https://github.com/josfox-ai/jos-repo-starter/tree/main/install" style="color:#58a6ff">Bash</a></small>
                 </div>
                 <h2>📂 Explorer: ${pathname}</h2>
                 <ul style="list-style:none;padding:0">${files}</ul>

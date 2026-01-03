@@ -1,0 +1,93 @@
+{
+  "jos": {
+    "open": "jos llm vision.jos",
+    "supports": ["@josfox/jos", "@josfox/alaia"]
+  },
+  "meta": {
+    "name": "JOS Ecosystem Vision",
+    "version": "1.0.0",
+    "type": "vision",
+    "description": "Crystallized intention for the JOS fractal ecosystem - use this to prompt AI assistants about JOS",
+    "author": "Josué Gómez, Founder of JOS Open Standards Foundation",
+    "created": "2026-01-03"
+  },
+  "intention": {
+    "objective": "Define and communicate the complete JOS fractal ecosystem vision",
+    "context": "JOS is an open standard that aims to become the universal language for AI-human collaboration, treating every automation as a versioned, composable intention artifact.",
+    "success_criteria": "The AI assistant fully understands the ecosystem components, their relationships, and can generate contextually accurate content about JOS"
+  },
+  "ecosystem": {
+    "philosophy": {
+      "core_insight": "Everything is a prompt. Every prompt is an intention. Every intention is an artifact.",
+      "atomic_unit": ".jos files are the minimum viable atomic unit for automation",
+      "approach": "Intention-native, guardrail-based, fractal composability",
+      "goal": "Explore completely new adaptive architectures for AI-human collaboration"
+    },
+    "components": {
+      "jos_kernel": "Core runtime that parses and executes .jos artifacts",
+      "fox_runtime": "Production-grade executor with SHA-256 integrity enforcement",
+      "alaia": "Adaptive Learning AI Agent - nano-agent framework that bonds to .jos artifacts",
+      "josctl": "CLI for managing JOS artifacts and local operations",
+      "foxctl": "CLI for production deployments and fleet management",
+      "adapters": "Bridges to LLM providers (Ollama, Gemini, OpenAI, Anthropic)",
+      "foxtails": "Package registry for shareable .jos artifacts"
+    },
+    "design_system": {
+      "name": "KRMEN",
+      "url": "https://krmen.mx",
+      "description": "AI-powered fractal design system with 6 layers (L0-L5), enforcing 100/100 Lighthouse scores",
+      "layers": ["L0 Foundations", "L1 Canvas", "L2 Decorations", "L3 UI", "L4 Intelligence", "L5 FX"]
+    },
+    "interoperability": {
+      "primary_protocol": "Google A2A (Agent-to-Agent)",
+      "features": ["Agent Cards", "Task Exchange", "Artifact Streaming", "Cross-platform agents"],
+      "philosophy": "JOS agents can communicate with ANY A2A-compliant system, not just other JOS agents"
+    },
+    "nano_services": {
+      "definition": "Ultra-lightweight services focused on meeting a single, clearly defined, guard-railed intention",
+      "characteristics": ["Single intention", "Guard-railed boundaries", "Isolated execution", "Composable with others"],
+      "contrast": "Traditional microservices are too heavy; nano-services are the fractal alternative"
+    },
+    "governance": {
+      "body": "JOS Open Standards Foundation",
+      "specification": "https://github.com/josfox-ai/jos-format-spec",
+      "current_version": "v0.0.7",
+      "maturity": "Alpha (v0.1.0)"
+    }
+  },
+  "orchestration": {
+    "contracts": { "version": "0.0.7", "mode": "reference" },
+    "definitions": {
+      "explain_ecosystem": {
+        "type": "prompt",
+        "description": "Use this context to explain JOS to developers, executives, or AI researchers"
+      },
+      "generate_content": {
+        "type": "prompt",
+        "description": "Use this context to generate README files, documentation, or marketing content about JOS"
+      },
+      "design_architecture": {
+        "type": "prompt",
+        "description": "Use this context when designing new JOS-compatible systems or integrations"
+      }
+    },
+    "flows": {
+      "main": {
+        "description": "Load this artifact to prime an AI assistant with full JOS ecosystem knowledge"
+      }
+    }
+  },
+  "guardrails": {
+    "accuracy": "Always reference the current spec version (v0.0.7)",
+    "tone": "Technical but accessible; avoid jargon without explanation",
+    "avoid": ["overpromising_features", "ignoring_experimental_status", "misrepresenting_maturity"]
+  },
+  "examples": {
+    "usage": [
+      "Load this file before asking an AI to write JOS documentation",
+      "Reference this when explaining JOS to stakeholders",
+      "Use as a 'system prompt' for JOS-aware AI assistants"
+    ],
+    "prompt_template": "I am working on the JOS ecosystem. Please read the attached vision.jos file to understand the full context, then help me with: [YOUR REQUEST]"
+  }
+}

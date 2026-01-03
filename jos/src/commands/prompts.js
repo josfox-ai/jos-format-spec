@@ -1,13 +1,12 @@
 /**
- * JOS PROMPTS Command - Prompt optimization via open API
+ * JOS PROMPTS Command - Prompt optimization via open API or Local LLM
  * Complies with JOS Prompts API Specification
- * Format version v0.0.7 — Specification maturity v0.1.0 (Alpha)
+ * Format version v0.0.8 — Specification maturity v0.1.0 (Alpha)
  */
 
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
-const http = require('http');
+const AdapterFactory = require('../adapters');
 
 // AURORA colors
 const C = {
@@ -26,7 +25,9 @@ function getProviderConfig(home) {
         return JSON.parse(fs.readFileSync(configPath, 'utf8'));
     }
     return {
-        providers: { 'josfox-cloud': { url: DEFAULT_PROVIDER, description: 'Official JOSFOX Cloud provider' } },
+        providers: {
+            'josfox-cloud': { url: DEFAULT_PROVIDER, type: 'native', description: 'Official JOSFOX Cloud provider' }
+        },
         default: 'josfox-cloud'
     };
 }
@@ -48,49 +49,13 @@ function getApiKey(home) {
     return process.env.JOSFOX_API_KEY || process.env.OPENAI_API_KEY || null;
 }
 
-async function apiRequest(url, method, body, apiKey) {
-    return new Promise((resolve, reject) => {
-        const urlObj = new URL(url);
-        const client = urlObj.protocol === 'https:' ? https : http;
-
-        const options = {
-            hostname: urlObj.hostname,
-            port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80),
-            path: urlObj.pathname,
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'User-Agent': 'jos-cli/1.0'
-            }
-        };
-
-        if (apiKey) options.headers['Authorization'] = `Bearer ${apiKey}`;
-
-        const req = client.request(options, (res) => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => {
-                try {
-                    resolve({ status: res.statusCode, data: JSON.parse(data) });
-                } catch {
-                    resolve({ status: res.statusCode, data: data });
-                }
-            });
-        });
-
-        req.on('error', reject);
-        if (body) req.write(JSON.stringify(body));
-        req.end();
-    });
-}
-
 exports.execute = async (args, home) => {
     const subcommand = args[0];
 
     if (args.includes('--help') || !subcommand) {
         console.log(`
 ${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}
-${C.bold}JOS PROMPTS${C.reset} // Prompt optimization via open API
+${C.bold}JOS PROMPTS${C.reset} // Prompt optimization via API or Local LLM
 ${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}
 
 ${C.bold}Usage:${C.reset}
@@ -103,16 +68,19 @@ ${C.bold}Subcommands:${C.reset}
   provider                Manage API providers
 
 ${C.bold}Options:${C.reset}
-  --model <name>          Target model (e.g., gpt-4o-2024)
-  --provider <url>        API endpoint URL
+  --model <name>          Target model (e.g., gpt-4o, llama3)
+  --provider <url>        API endpoint or Ollama URL
+  --type <native|ollama>  Provider type (default: native)
   --dry-run               Show changes without writing
   --output <file>         Output file path
 
+${C.bold}Experimental:${C.reset}
+  Ollama Adapter supported via --type ollama
+
 ${C.bold}Examples:${C.reset}
-  jos prompts optimize deploy.jos --model gpt-4o-2024
-  jos prompts validate my-task.jos
-  jos prompts generate "Deploy to Vercel" --output deploy.jos
-  jos prompts provider add my-api https://my-api.com/prompts
+  jos prompts optimize flow.jos --model llama3 --provider local
+  jos prompts provider add local http://localhost:11434 ollama
+  jos prompts generate "Deploy app"
 `);
         return;
     }
@@ -127,260 +95,135 @@ ${C.bold}Examples:${C.reset}
             for (const [name, info] of Object.entries(config.providers)) {
                 const isDefault = config.default === name;
                 const marker = isDefault ? `${C.green}★${C.reset}` : ' ';
-                console.log(`  ${marker} ${C.bold}${name}${C.reset}`);
+                const typeLabel = info.type === 'ollama' ? `${C.yellow}[Ollama]${C.reset}` : `${C.blue}[Native]${C.reset}`;
+                console.log(`  ${marker} ${C.bold}${name}${C.reset} ${typeLabel}`);
                 console.log(`    ${C.gray}${info.url}${C.reset}`);
-                if (info.description) console.log(`    ${C.dim}${info.description}${C.reset}`);
             }
-            console.log(`\n${C.gray}★ = default provider${C.reset}\n`);
+            console.log('');
             return;
         }
 
         if (action === 'add') {
             const name = args[2];
             const url = args[3];
+            const type = args[4] || 'native'; // 'native' or 'ollama'
             if (!name || !url) {
-                console.log(`${C.red}✖ Usage: jos prompts provider add <name> <url>${C.reset}`);
+                console.log(`${C.red}✖ Usage: jos prompts provider add <name> <url> [type]${C.reset}`);
                 return;
             }
-            config.providers[name] = { url };
+            config.providers[name] = { url, type };
             saveProviderConfig(home, config);
-            console.log(`${C.green}✓ Added provider: ${name}${C.reset}`);
+            console.log(`${C.green}✓ Added provider: ${name} (${type})${C.reset}`);
             return;
         }
 
         if (action === 'remove') {
             const name = args[2];
-            if (!name) {
-                console.log(`${C.red}✖ Usage: jos prompts provider remove <name>${C.reset}`);
-                return;
-            }
+            if (!config.providers[name]) return console.log(`${C.red}✖ Not found${C.reset}`);
             delete config.providers[name];
             if (config.default === name) config.default = 'josfox-cloud';
             saveProviderConfig(home, config);
-            console.log(`${C.green}✓ Removed provider: ${name}${C.reset}`);
+            console.log(`${C.green}✓ Removed${C.reset}`);
             return;
         }
-
         if (action === 'default') {
             const name = args[2];
-            if (!name || !config.providers[name]) {
-                console.log(`${C.red}✖ Provider not found: ${name}${C.reset}`);
-                return;
-            }
+            if (!config.providers[name]) return console.log(`${C.red}✖ Not found${C.reset}`);
             config.default = name;
             saveProviderConfig(home, config);
-            console.log(`${C.green}✓ Default provider set to: ${name}${C.reset}`);
+            console.log(`${C.green}✓ Default: ${name}${C.reset}`);
             return;
         }
-
         return;
     }
 
-    // Get provider URL
-    const providerConfig = getProviderConfig(home);
-    let providerUrl = providerConfig.providers[providerConfig.default]?.url || DEFAULT_PROVIDER;
+    // Resolve Provider
+    const config = getProviderConfig(home);
+    const providerKey = config.default;
+    const providerCfg = config.providers[providerKey] || config.providers['josfox-cloud'];
+
+    // Allow overrides
+    let providerUrl = providerCfg.url;
+    let providerType = providerCfg.type || 'native';
 
     if (args.includes('--provider')) {
-        providerUrl = args[args.indexOf('--provider') + 1];
+        const pName = args[args.indexOf('--provider') + 1];
+        if (config.providers[pName]) {
+            providerUrl = config.providers[pName].url;
+            providerType = config.providers[pName].type || 'native';
+        } else {
+            // Assume direct URL, default to native unless --type specified
+            providerUrl = pName;
+        }
+    }
+    if (args.includes('--type')) {
+        providerType = args[args.indexOf('--type') + 1];
     }
 
     const apiKey = getApiKey(home);
-    const dryRun = args.includes('--dry-run');
     const model = args.includes('--model') ? args[args.indexOf('--model') + 1] : null;
 
-    // OPTIMIZE
-    if (subcommand === 'optimize') {
-        const target = args[1];
-        if (!target) {
-            console.log(`${C.red}✖ Usage: jos prompts optimize <file.jos>${C.reset}`);
-            return;
-        }
+    // Use Factory
+    const Adapter = AdapterFactory.getAdapter(providerType);
 
-        let artifactPath = path.resolve(target.endsWith('.jos') ? target : target + '.jos');
-        if (!fs.existsSync(artifactPath)) {
-            console.log(`${C.red}✖ Artifact not found: ${artifactPath}${C.reset}`);
-            return;
-        }
+    console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
+    console.log(`${C.cyan}${C.bold}JOS PROMPTS${C.reset} [${subcommand.toUpperCase()}]`);
+    console.log(`${C.dim}Provider: ${providerUrl} (${providerType})${C.reset}`);
+    if (model) console.log(`${C.dim}Model: ${model}${C.reset}`);
+    console.log(`${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}\n`);
 
-        const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
+    try {
+        if (subcommand === 'optimize') {
+            const target = args[1];
+            if (!target) return console.log(`${C.red}✖ Target file required${C.reset}`);
 
-        console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
-        console.log(`${C.cyan}${C.bold}JOS PROMPTS OPTIMIZE${C.reset}`);
-        console.log(`${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}\n`);
+            const artifactPath = path.resolve(target.endsWith('.jos') ? target : target + '.jos');
+            const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
 
-        console.log(`${C.cyan}📦 Artifact:${C.reset} ${artifact.meta?.name || path.basename(artifactPath)}`);
-        console.log(`${C.cyan}🔌 Provider:${C.reset} ${providerUrl}`);
-        if (model) console.log(`${C.cyan}🤖 Model:${C.reset} ${model}`);
-        console.log('');
+            console.log(`${C.yellow}⏳ Optimizing...${C.reset}`);
+            const result = await Adapter.optimize(artifact, { optimization_goals: ['clarity'] }, providerUrl, model, apiKey);
 
-        try {
-            console.log(`${C.yellow}⏳ Optimizing prompts...${C.reset}`);
-
-            const response = await apiRequest(`${providerUrl}/optimize`, 'POST', {
-                artifact,
-                options: { target_model: model, optimization_goals: ['clarity', 'specificity'] },
-                format_version: '0.0.7'
-            }, apiKey);
-
-            if (response.status !== 200) {
-                console.log(`${C.red}✖ API Error: ${response.data?.error?.message || response.status}${C.reset}`);
-                return;
-            }
-
-            const result = response.data;
-
-            console.log(`\n${C.green}✓ Optimization complete${C.reset}\n`);
-
-            if (result.quality_score) {
-                console.log(`${C.cyan}Quality Score:${C.reset}`);
-                console.log(`  Before: ${C.yellow}${(result.quality_score.before * 100).toFixed(0)}%${C.reset}`);
-                console.log(`  After:  ${C.green}${(result.quality_score.after * 100).toFixed(0)}%${C.reset}`);
-            }
-
-            if (result.changes?.length > 0) {
-                console.log(`\n${C.cyan}Changes:${C.reset}`);
-                for (const change of result.changes) {
-                    console.log(`  ${C.bold}${change.field}${C.reset}`);
-                    console.log(`    ${C.red}- ${change.original.substring(0, 60)}...${C.reset}`);
-                    console.log(`    ${C.green}+ ${change.optimized.substring(0, 60)}...${C.reset}`);
-                    console.log(`    ${C.dim}${change.reason}${C.reset}`);
-                }
-            }
-
-            if (!dryRun && result.optimized_artifact) {
+            if (args.includes('--dry-run')) {
+                console.log(JSON.stringify(result.optimized_artifact, null, 2));
+            } else {
                 fs.writeFileSync(artifactPath, JSON.stringify(result.optimized_artifact, null, 2));
-                console.log(`\n${C.green}✓ Saved to: ${artifactPath}${C.reset}`);
-            } else if (dryRun) {
-                console.log(`\n${C.yellow}⚠ Dry run - changes not saved${C.reset}`);
+                console.log(`${C.green}✓ Optimized artifact saved to ${path.basename(artifactPath)}${C.reset}`);
             }
-
-        } catch (e) {
-            console.log(`${C.red}✖ Request failed: ${e.message}${C.reset}`);
-            console.log(`${C.gray}  Ensure provider is accessible and API key is configured${C.reset}`);
         }
+        else if (subcommand === 'validate') {
+            const target = args[1];
+            if (!target) return console.log(`${C.red}✖ Target file required${C.reset}`);
+            const artifactPath = path.resolve(target.endsWith('.jos') ? target : target + '.jos');
+            const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
 
-        console.log('');
-        return;
-    }
+            console.log(`${C.yellow}⏳ Validating...${C.reset}`);
+            const result = await Adapter.validate(artifact, providerUrl, model, apiKey);
 
-    // VALIDATE
-    if (subcommand === 'validate') {
-        const target = args[1];
-        if (!target) {
-            console.log(`${C.red}✖ Usage: jos prompts validate <file.jos>${C.reset}`);
-            return;
+            console.log(`${C.cyan}Quality Score:${C.reset} ${result.quality_score}`);
+            console.log(`${C.cyan}Valid:${C.reset} ${result.valid}`);
+            if (result.issues) result.issues.forEach(i => console.log(`  ${C.red}✖ ${i.message}${C.reset}`));
         }
+        else if (subcommand === 'generate') {
+            const intention = args[1];
+            if (!intention) return console.log(`${C.red}✖ Intention required${C.reset}`);
 
-        let artifactPath = path.resolve(target.endsWith('.jos') ? target : target + '.jos');
-        if (!fs.existsSync(artifactPath)) {
-            console.log(`${C.red}✖ Artifact not found: ${artifactPath}${C.reset}`);
-            return;
-        }
+            console.log(`${C.yellow}⏳ Generating...${C.reset}`);
+            const result = await Adapter.generate(intention, { type: 'task' }, providerUrl, model, apiKey);
 
-        const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
-
-        console.log(`\n${C.cyan}Validating prompt quality for:${C.reset} ${path.basename(artifactPath)}\n`);
-
-        try {
-            const response = await apiRequest(`${providerUrl}/validate`, 'POST', {
-                artifact,
-                format_version: '0.0.7'
-            }, apiKey);
-
-            if (response.status !== 200) {
-                console.log(`${C.red}✖ API Error: ${response.data?.error?.message || response.status}${C.reset}`);
-                return;
-            }
-
-            const result = response.data;
-
-            console.log(`${C.cyan}Quality Score:${C.reset} ${(result.quality_score * 100).toFixed(0)}%`);
-            console.log(`${C.cyan}Valid:${C.reset} ${result.valid ? C.green + '✓ Yes' : C.red + '✖ No'}${C.reset}`);
-
-            if (result.issues?.length > 0) {
-                console.log(`\n${C.yellow}Issues:${C.reset}`);
-                for (const issue of result.issues) {
-                    const icon = issue.severity === 'error' ? C.red + '✖' : C.yellow + '⚠';
-                    console.log(`  ${icon} ${issue.field}: ${issue.message}${C.reset}`);
-                }
-            }
-
-            if (result.suggestions?.length > 0) {
-                console.log(`\n${C.cyan}Suggestions:${C.reset}`);
-                for (const s of result.suggestions) {
-                    console.log(`  💡 ${s.field}: ${s.suggestion}`);
-                }
-            }
-
-        } catch (e) {
-            console.log(`${C.red}✖ Request failed: ${e.message}${C.reset}`);
-        }
-
-        console.log('');
-        return;
-    }
-
-    // GENERATE
-    if (subcommand === 'generate') {
-        const intention = args[1];
-        if (!intention) {
-            console.log(`${C.red}✖ Usage: jos prompts generate "<intention>" --output <file.jos>${C.reset}`);
-            return;
-        }
-
-        const outputPath = args.includes('--output') ?
-            path.resolve(args[args.indexOf('--output') + 1]) : null;
-
-        console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
-        console.log(`${C.cyan}${C.bold}JOS PROMPTS GENERATE${C.reset}`);
-        console.log(`${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}\n`);
-
-        console.log(`${C.cyan}💭 Intention:${C.reset} "${intention}"`);
-        console.log(`${C.cyan}🔌 Provider:${C.reset} ${providerUrl}`);
-        console.log('');
-
-        try {
-            console.log(`${C.yellow}⏳ Generating artifact...${C.reset}`);
-
-            const response = await apiRequest(`${providerUrl}/generate`, 'POST', {
-                intention,
-                options: { type: 'pipeline', target_model: model, include_examples: true },
-                format_version: '0.0.7'
-            }, apiKey);
-
-            if (response.status !== 200) {
-                console.log(`${C.red}✖ API Error: ${response.data?.error?.message || response.status}${C.reset}`);
-                return;
-            }
-
-            const result = response.data;
-
-            console.log(`\n${C.green}✓ Generated${C.reset}`);
-            console.log(`${C.cyan}Confidence:${C.reset} ${(result.confidence * 100).toFixed(0)}%`);
-
-            if (result.assumptions?.length > 0) {
-                console.log(`\n${C.cyan}Assumptions:${C.reset}`);
-                for (const a of result.assumptions) {
-                    console.log(`  ${C.dim}• ${a}${C.reset}`);
-                }
-            }
-
-            if (outputPath && result.artifact) {
-                fs.writeFileSync(outputPath, JSON.stringify(result.artifact, null, 2));
-                console.log(`\n${C.green}✓ Saved to: ${outputPath}${C.reset}`);
-            } else if (result.artifact) {
-                console.log(`\n${C.cyan}Generated Artifact:${C.reset}`);
+            const outputPath = args.includes('--output') ? args[args.indexOf('--output') + 1] : null;
+            if (outputPath) {
+                fs.writeFileSync(path.resolve(outputPath), JSON.stringify(result.artifact, null, 2));
+                console.log(`${C.green}✓ Saved to ${outputPath}${C.reset}`);
+            } else {
                 console.log(JSON.stringify(result.artifact, null, 2));
             }
-
-        } catch (e) {
-            console.log(`${C.red}✖ Request failed: ${e.message}${C.reset}`);
+        } else {
+            console.log(`${C.red}✖ Unknown subcommand${C.reset}`);
         }
-
-        console.log('');
-        return;
+    } catch (e) {
+        console.error(`${C.red}✖ Error: ${e.message}${C.reset}`);
+        if (e.message && e.message.includes('ECONNREFUSED')) {
+            console.log(`${C.gray}  Is Ollama running? (Try 'ollama serve')${C.reset}`);
+        }
     }
-
-    console.log(`${C.red}✖ Unknown subcommand: ${subcommand}${C.reset}`);
-    console.log(`${C.gray}Use --help for usage information${C.reset}`);
 };

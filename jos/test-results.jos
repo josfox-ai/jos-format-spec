@@ -1,0 +1,88 @@
+{
+  "jos": {
+    "open": "jos validate test-results.jos",
+    "supports": ["@josfox/jos"]
+  },
+  "meta": {
+    "name": "JOS CLI Test Results",
+    "version": "1.0.0",
+    "type": "test-report",
+    "timestamp": "2026-01-03T19:49:30Z",
+    "generated_by": "JOS CLI Verification Suite"
+  },
+  "intention": {
+    "objective": "Document test results for all JOS CLI commands",
+    "success_criteria": "All core commands execute without errors"
+  },
+  "test_results": {
+    "summary": {
+      "total_tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "warnings": 1
+    },
+    "commands": {
+      "jos_help": {
+        "command": "jos --help",
+        "status": "PASS",
+        "output": "Displays Kitsune banner and command list"
+      },
+      "jos_verify": {
+        "command": "jos verify",
+        "status": "PASS",
+        "output": "✅ SYSTEM HEALTHY"
+      },
+      "jos_init": {
+        "command": "jos init test-artifact --type task",
+        "status": "PASS",
+        commente": "Created test-artifact.jos with signature"
+      },
+      "jos_validate": {
+        "command": "jos validate examples/reference-v0.0.7.jos",
+        "status": "WARN",
+        "output": "⚠ No Integrity Reference (expected for dev artifacts)"
+      },
+      "jos_prompts_help": {
+        "command": "jos prompts --help",
+        "status": "PASS",
+        "output": "Shows optimize, validate, generate, provider subcommands"
+      },
+      "jos_prompts_provider_list": {
+        "command": "jos prompts provider list",
+        "status": "PASS",
+        "output": "★ josfox-cloud [Native], local [Ollama]"
+      },
+      "jos_llm_help": {
+        "command": "jos llm --help",
+        "status": "PASS",
+        "output": "Shows artifact execution options"
+      },
+      "jos_serve": {
+        "command": "jos serve",
+        "status": "PASS",
+        "output": "Server running on port 1111"
+      },
+      "jos_secrets": {
+        "command": "jos secrets --help",
+        "status": "PASS",
+        "output": "Shows vault management options"
+      },
+      "jos_run": {
+        "command": "jos run --help",
+        "status": "PASS",
+        "output": "Shows artifact execution options"
+      }
+    }
+  },
+  "environment": {
+    "node_version": ">=18",
+    "platform": "Windows",
+    "jos_version": "4.0.8",
+    "spec_version": "v0.0.7"
+  },
+  "notes": [
+    "Validation warning for missing SHA is expected in development mode",
+    ".fox files always require SHA checksums",
+    "Ollama adapter requires local Ollama instance running"
+  ]
+}

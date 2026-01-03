@@ -214,7 +214,7 @@ ${C.bold}Example:${C.reset}
 
         try {
             if (def.type === 'shell') {
-                execSync(def.command, { stdio: 'inherit', shell: '/bin/bash' });
+                execSync(def.command, { stdio: 'inherit' });
                 console.log(`${C.green}      ✓ Complete${C.reset}`);
             } else if (def.type === 'jos') {
                 console.log(`${C.purple}      Running sub-artifact: ${def.artifact}${C.reset}`);

@@ -1,0 +1,43 @@
+{
+    "name": "jos-repo-starter",
+    "version": "1.0.0",
+    "description": "Practical examples to make the most of your JOS experience",
+    "maintainer": "josfox-ai",
+    "homepage": "https://josfox-ai.github.io/jos-format-spec",
+    "packages": [
+        {
+            "name": "ollama",
+            "path": "adapters/ollama.jos",
+            "version": "1.0.0",
+            "description": "Local LLM setup via Ollama",
+            "tags": [
+                "llm",
+                "local",
+                "adapter"
+            ]
+        },
+        {
+            "name": "gemini-cli",
+            "path": "adapters/gemini-cli.jos",
+            "version": "1.0.0",
+            "description": "Google Gemini CLI integration",
+            "tags": [
+                "llm",
+                "cloud",
+                "google",
+                "adapter"
+            ]
+        },
+        {
+            "name": "reference",
+            "path": "examples/reference-v0.0.7.jos",
+            "version": "0.0.7",
+            "description": "Canonical JOS v0.0.7 specification example",
+            "tags": [
+                "spec",
+                "reference",
+                "example"
+            ]
+        }
+    ]
+}

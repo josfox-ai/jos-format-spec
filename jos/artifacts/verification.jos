@@ -1,0 +1,48 @@
+{
+  "jos": {
+    "open": "jos run verification",
+    "supports": ["@josfox/jos"]
+  },
+  "orchestration_contract": {
+    "version": "0.0.7",
+    "mode": "sync"
+  },
+  "meta": {
+    "name": "verification",
+    "version": "1.0.0",
+    "type": "task"
+  },
+  "intention": {
+    "objective": "Verify the integrity of the installed JOS CLI commands",
+    "success_criteria": "All help table commands exit with code 0"
+  },
+  "orchestration": {
+    "definitions": {
+      "check_add": { "type": "shell", "command": "jos add --help" },
+      "check_get": { "type": "shell", "command": "jos get --help" },
+      "check_init": { "type": "shell", "command": "jos init --help" },
+      "check_prompts": { "type": "shell", "command": "jos prompts --help" },
+      "check_repo": { "type": "shell", "command": "jos repo --help" },
+      "check_run": { "type": "shell", "command": "jos run --help" },
+      "check_secrets": { "type": "shell", "command": "jos secrets --help" },
+      "check_validate": { "type": "shell", "command": "jos validate --help" },
+      "check_serve": { "type": "shell", "command": "jos serve --help" }
+    },
+    "flows": {
+      "main": {
+        "steps": [
+          "check_add",
+          "check_get",
+          "check_init",
+          "check_prompts",
+          "check_repo",
+          "check_run",
+          "check_secrets",
+          "check_validate",
+          "check_serve"
+        ]
+      }
+    }
+  },
+  "guardrails": { "max_retries": 0 }
+}

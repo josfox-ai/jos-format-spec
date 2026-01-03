@@ -31,5 +31,10 @@
   "type": "commonjs",
   "engines": {
     "node": ">=18"
+  },
+  "scripts": {
+    "test": "node bin/jos verify",
+    "test:cli": "node bin/jos verify",
+    "test:all": "node bin/jos verify && node bin/jos validate ../examples/reference-v0.0.7.jos --no-strict"
   }
 }

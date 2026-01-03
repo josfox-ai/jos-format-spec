@@ -1,6 +1,18 @@
 #!/usr/bin/env node
-const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
-const JOS_HOME = path.join(process.env.HOME, '.jos');
+const fs = require('fs'), path = require('path'), os = require('os'), { spawn } = require('child_process');
+const JOS_HOME = path.join(os.homedir(), '.jos');
+
+// Ensure JOS_HOME exists
+if (!fs.existsSync(JOS_HOME)) {
+    try {
+        fs.mkdirSync(JOS_HOME, { recursive: true });
+        // Also create commands dir since we check it later
+        fs.mkdirSync(path.join(JOS_HOME, 'commands'), { recursive: true });
+    } catch (e) {
+        // Silently fail if we can't create it, might be permission issue
+        // The command might still work if it doesn't need to write
+    }
+}
 
 // Terminal capability detection
 const supportsUnicode = () => {
@@ -96,7 +108,7 @@ const ALIASES = { server: 'serve' };
 const rawCmd = process.argv[2];
 const cmd = ALIASES[rawCmd] || rawCmd;
 
-if (!cmd) {
+if (!cmd || cmd === '--help' || cmd === '-h') {
     console.log(getKitsuneBanner());
     console.log(`\n${C.purple}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C.reset}`);
     console.log(`  ${C.white}${C.bold}JOS${C.reset} ${C.cyan}KERNEL v4.0.8${C.reset} ${C.gray}// Stoic Architecture${C.reset}`);
@@ -109,6 +121,9 @@ if (!cmd) {
     console.log(`    ${C.cyan}add${C.reset}        ${C.gray}Add task to .jos artifact${C.reset}`);
     console.log(`    ${C.cyan}validate${C.reset}   ${C.gray}Validate .jos artifact${C.reset}`);
     console.log(`    ${C.purple}run${C.reset}        ${C.gray}Execute .jos artifacts${C.reset}`);
+    console.log(`    ${C.green}verify${C.reset}     ${C.gray}Self-check system health${C.reset}`);
+    console.log(`    ${C.cyan}prompts${C.reset}    ${C.gray}Prompt optimization & generation${C.reset}`);
+    console.log(`    ${C.cyan}llm${C.reset}        ${C.gray}Execute artifacts via LLM (Adapter)${C.reset}`);
     console.log(`    ${C.magenta}secrets${C.reset}    ${C.gray}Manage encrypted credentials${C.reset}`);
     console.log(`    ${C.blue}get${C.reset}        ${C.gray}Fetch packages from repos${C.reset}\n`);
     console.log(`${C.dim}  Run ${C.cyan}jos <cmd> --help${C.reset}${C.dim} for command-specific options${C.reset}\n`);

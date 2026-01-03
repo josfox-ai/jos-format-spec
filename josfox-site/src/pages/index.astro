@@ -1,0 +1,133 @@
+---
+/**
+ * JOS Official Site - Built with KRMEN Design System
+ * L0: 8px Unit-K grid
+ * L1: Aurora canvas background
+ * L2: Glassmorphism, neon accents
+ * L3: Cards, navigation
+ * L4: MAGIC Kernel integration ready
+ * L5: Particle FX (optional)
+ */
+import '../styles/krmen.css';
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JOS - JSON Orchestration Spec | Intention-Native AI</title>
+  <meta name="description" content="JOS is the universal language for agentic AI intentions. Define once, run anywhere.">
+  
+  <!-- KRMEN: Critical CSS inline -->
+  <style>
+    :root {
+      /* L0 Foundations - Unit-K */
+      --unit-k: 8px;
+      --space-1: calc(var(--unit-k) * 1);
+      --space-2: calc(var(--unit-k) * 2);
+      --space-3: calc(var(--unit-k) * 3);
+      --space-4: calc(var(--unit-k) * 4);
+      --space-6: calc(var(--unit-k) * 6);
+      --space-8: calc(var(--unit-k) * 8);
+      
+      /* Colors - Aurora Palette */
+      --bg-void: #050608;
+      --bg-elevated: rgba(255,255,255,0.03);
+      --primary: #a855f7;
+      --secondary: #06b6d4;
+      --accent: #f472b6;
+      --text: #fafafa;
+      --text-muted: #9ca3af;
+      
+      /* L2 Decorations */
+      --glass-bg: rgba(255,255,255,0.05);
+      --glass-border: rgba(255,255,255,0.1);
+      --neon-glow: 0 0 20px rgba(168, 85, 247, 0.3);
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-family: 'Inter', -apple-system, sans-serif; scroll-behavior: smooth; }
+    body { background: var(--bg-void); color: var(--text); line-height: 1.6; }
+  </style>
+  
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "JOS - JSON Orchestration Spec",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Cross-platform",
+    "offers": { "@type": "Offer", "price": "0" }
+  }
+  </script>
+</head>
+<body>
+  <!-- L1: Aurora Canvas Background -->
+  <div class="l1-canvas"></div>
+  
+  <main class="hero">
+    <div class="content">
+      <!-- L3: Logo Component -->
+      <div class="logo-block">
+        <span class="fox-icon">🦊</span>
+        <h1 class="gradient-text">JOS</h1>
+      </div>
+      
+      <p class="tagline">The Universal Language for Agentic AI</p>
+      <p class="subtitle">Define intentions. Execute anywhere. Stay in control.</p>
+      
+      <!-- L3: Install Box Component -->
+      <div class="glass-card install-box">
+        <code>npm install -g @josfox/jos</code>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('npm install -g @josfox/jos')">📋</button>
+      </div>
+
+      <!-- L3: CTA Buttons -->
+      <div class="cta-row">
+        <a href="/docs" class="btn-primary">Get Started →</a>
+        <a href="https://github.com/josfox-ai/jos-format-spec" class="btn-glass">View on GitHub</a>
+      </div>
+
+      <!-- L3: Feature Grid -->
+      <section class="feature-grid">
+        <article class="glass-card feature">
+          <h3>📄 .jos Artifacts</h3>
+          <p>JSON-based intention files that describe what you want AI to do, not how.</p>
+        </article>
+        <article class="glass-card feature">
+          <h3>🔌 Adapters</h3>
+          <p>Run locally with Ollama, or in the cloud with Gemini, OpenAI, Anthropic.</p>
+        </article>
+        <article class="glass-card feature">
+          <h3>🦊 Foxtails</h3>
+          <p>Pre-built packages. <code>jos get ollama</code> and you're ready.</p>
+        </article>
+      </section>
+
+      <!-- L3: Code Example -->
+      <section class="glass-card code-block">
+        <h2>What does a .jos file look like?</h2>
+        <pre><code>{
+  "intention": {
+    "objective": "Deploy my app to production",
+    "success_criteria": "App is live and healthy"
+  },
+  "orchestration": {
+    "flows": {
+      "main": ["build", "test", "deploy", "verify"]
+    }
+  }
+}</code></pre>
+      </section>
+      
+      <!-- L4: KRMEN Badge -->
+      <footer class="footer">
+        <p>Built with <a href="https://krmen.mx">KRMEN</a> Design System · .jos Open Standard</p>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>
