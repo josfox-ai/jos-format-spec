@@ -1,0 +1,9 @@
+{
+    "test_id": "invalid-bad-json",
+    "description": "Invalid - not valid JSON structure",
+    "input_raw": "{ id_jos: unquoted }",
+    "expected": {
+        "valid": false,
+        "error": "parse_error"
+    }
+}

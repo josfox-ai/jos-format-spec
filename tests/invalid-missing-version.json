@@ -1,0 +1,12 @@
+{
+    "test_id": "invalid-missing-version",
+    "description": "Invalid - missing orchestration_contract.version",
+    "input": {
+        "id_jos": "test-no-version",
+        "orchestration_contract": {}
+    },
+    "expected": {
+        "valid": false,
+        "error": "missing_required_field"
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "test_id": "invalid-missing-id",
+    "description": "Invalid - missing required id_jos field",
+    "input": {
+        "orchestration_contract": {
+            "version": "0.0.7"
+        }
+    },
+    "expected": {
+        "valid": false,
+        "error": "missing_required_field"
+    }
+}

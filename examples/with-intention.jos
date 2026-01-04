@@ -1,0 +1,11 @@
+{
+  "id_jos": "test-with-intention",
+  "orchestration_contract": {
+    "version": "0.0.7"
+  },
+  "intention": {
+    "objective": "Demonstrate Level 1 conformance with intention block",
+    "context": "This artifact includes semantic intention",
+    "success_criteria": "Artifact validates against Level 1 requirements"
+  }
+}

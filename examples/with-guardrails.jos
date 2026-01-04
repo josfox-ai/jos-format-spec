@@ -1,0 +1,16 @@
+{
+  "id_jos": "test-with-guardrails",
+  "orchestration_contract": {
+    "version": "0.0.7"
+  },
+  "intention": {
+    "objective": "Demonstrate Level 2 conformance with guardrails",
+    "success_criteria": "Artifact validates against Level 2 requirements"
+  },
+  "guardrails": {
+    "max_retries": 3,
+    "timeout_ms": 30000,
+    "require_confirmation": false,
+    "avoid": ["destructive_operations", "external_api_calls"]
+  }
+}

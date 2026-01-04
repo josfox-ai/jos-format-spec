@@ -1,0 +1,16 @@
+{
+    "test_id": "valid-with-intention",
+    "description": "Valid artifact with intention block",
+    "input": {
+        "id_jos": "test-intention",
+        "orchestration_contract": {
+            "version": "0.0.7"
+        },
+        "intention": {
+            "objective": "Test objective"
+        }
+    },
+    "expected": {
+        "valid": true
+    }
+}

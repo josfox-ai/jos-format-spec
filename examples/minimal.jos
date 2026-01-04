@@ -1,0 +1,6 @@
+{
+  "id_jos": "test-minimal",
+  "orchestration_contract": {
+    "version": "0.0.7"
+  }
+}

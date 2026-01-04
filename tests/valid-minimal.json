@@ -1,0 +1,13 @@
+{
+    "test_id": "valid-minimal",
+    "description": "Minimal valid artifact with required fields only",
+    "input": {
+        "id_jos": "test-minimal",
+        "orchestration_contract": {
+            "version": "0.0.7"
+        }
+    },
+    "expected": {
+        "valid": true
+    }
+}

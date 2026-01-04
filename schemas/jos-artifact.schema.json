@@ -1,0 +1,171 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://josfox.ai/schemas/jos-artifact.schema.json",
+    "title": "JOS Artifact",
+    "description": "Schema for JOS format specification v0.0.7",
+    "type": "object",
+    "required": [
+        "id_jos",
+        "orchestration_contract"
+    ],
+    "properties": {
+        "id_jos": {
+            "type": "string",
+            "description": "Unique identifier for the artifact",
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "orchestration_contract": {
+            "type": "object",
+            "required": [
+                "version"
+            ],
+            "properties": {
+                "version": {
+                    "type": "string",
+                    "pattern": "^\\d+\\.\\d+\\.\\d+$",
+                    "description": "Semantic version of the JOS specification"
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "strict",
+                        "reference",
+                        "experimental"
+                    ]
+                }
+            }
+        },
+        "meta": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "license": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string",
+                    "format": "date"
+                }
+            }
+        },
+        "intention": {
+            "type": "object",
+            "required": [
+                "objective"
+            ],
+            "properties": {
+                "objective": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "What the artifact intends to accomplish"
+                },
+                "context": {
+                    "type": "string"
+                },
+                "success_criteria": {
+                    "type": "string"
+                }
+            }
+        },
+        "guardrails": {
+            "type": "object",
+            "properties": {
+                "max_retries": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "timeout_ms": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "require_confirmation": {
+                    "type": "boolean"
+                },
+                "avoid": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "orchestration": {
+            "type": "object",
+            "properties": {
+                "definitions": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                            "type"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string"
+                            },
+                            "template": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "flows": {
+                    "type": "object",
+                    "properties": {
+                        "main": {
+                            "type": "object",
+                            "required": [
+                                "steps"
+                            ],
+                            "properties": {
+                                "steps": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "description": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "security": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "open",
+                        "authenticated",
+                        "encrypted"
+                    ]
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
